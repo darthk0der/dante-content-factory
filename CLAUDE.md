@@ -22,11 +22,11 @@ V2 is a full replacement of the existing V1 build at `dante-content-factory.verc
 
 Work through these phases in order. Complete and confirm each phase before starting the next.
 
-**Phase 1 — Core manual flow**
-UI scaffold, Generate tab, Review Queue tab, Scheduled tab, Published tab, all manual content types, publish routes (GitHub + Twitter), image generation.
+**Phase 1 — Core manual flow** ✅ COMPLETE
+UI scaffold, Generate tab, Review Queue tab, Auto Queue tab (shell), Scheduled tab, Published tab, all 5 manual content types, publish routes (GitHub + Twitter), image generation, preview-first editor.
 
 **Phase 2 — Auto Queue + SEO engine**
-Auto Queue tab, SEO blog queue cron, weekly Ahrefs keyword scan, reactive spike detection, daily automated X post cron.
+Fill in the Auto Queue tab with real data. SEO blog queue cron, weekly Ahrefs keyword scan, reactive spike detection, daily automated X post cron.
 
 **Phase 3 — Social listening integration + ARRCC endpoint**
 Add `GET /api/social-trending` to the ARRCC project (separate deployment), wire paid ads from social listening into the Content Factory Auto Queue.
@@ -40,33 +40,33 @@ Do not start Phase 2 until Phase 1 is confirmed working. Do not start Phase 3 un
 ```
 dante-content-factory/
 ├── api/
-│   ├── generate-content.js       # POST — manual content generation via Anthropic API
-│   ├── generate-image.js         # POST — image generation via fal.ai
-│   ├── publish.js                # POST — routes to GitHub API or Twitter API
-│   ├── schedule.js               # POST — saves content with scheduled_at to Redis
-│   ├── queue.js                  # GET  — returns all items from Redis
-│   ├── cron-publish.js           # Vercel Cron — publishes scheduled items every 5 min
-│   ├── cron-seo-queue.js         # Vercel Cron — weekly SEO keyword scan + generation (Mondays)
-│   ├── cron-daily-tweet.js       # Vercel Cron — daily automated X post from condition pages
-│   ├── cron-spike-detect.js      # Vercel Cron — daily reactive spike detection
+│   ├── generate-content.js       # POST — manual content generation via Anthropic API (✅ built)
+│   ├── generate-image.js         # POST — image generation via fal.ai (✅ built)
+│   ├── preview.js                # GET  — returns built HTML for iframe preview (✅ built)
+│   ├── publish.js                # POST — routes to GitHub API or Twitter API (✅ built)
+│   ├── schedule.js               # POST — saves content with scheduled_at to Redis (✅ built)
+│   ├── queue.js                  # GET/PATCH/DELETE — Redis queue operations (✅ built)
+│   ├── cron-publish.js           # Vercel Cron — publishes scheduled items every 5 min (✅ built)
+│   ├── cron-seo-queue.js         # Vercel Cron — weekly SEO keyword scan + generation (Phase 2)
+│   ├── cron-daily-tweet.js       # Vercel Cron — daily automated X post from condition pages (Phase 2)
+│   ├── cron-spike-detect.js      # Vercel Cron — daily reactive spike detection (Phase 2)
 │   └── social-trending.js        # GET — reads ARRCC Redis, returns top social topics (Phase 3)
 ├── src/
 │   ├── main.jsx
-│   ├── App.jsx                   # Root — 5 tabs, routing, state
+│   ├── App.jsx                   # Root — 5 tabs, routing, state (✅ built)
 │   ├── components/
-│   │   ├── GenerateTab.jsx       # Content type selector + inputs
-│   │   ├── ReviewTab.jsx         # Manual queue — list + inline editor + flags + preview
-│   │   ├── AutoQueueTab.jsx      # Auto-generated content — separate queue, same editor
-│   │   ├── ScheduledTab.jsx      # Scheduled content list
-│   │   ├── PublishedTab.jsx      # Published archive with platform links
-│   │   ├── Editor.jsx            # Full field editor for any content item
-│   │   ├── FlagsPanel.jsx        # QA flags sidebar
-│   │   └── PreviewPane.jsx       # Iframe preview for landing pages and blog posts
+│   │   ├── GenerateTab.jsx       # Content type selector + inputs for all 5 types (✅ built)
+│   │   ├── ReviewTab.jsx         # Manual queue (source: manual) — list + editor (✅ built)
+│   │   ├── AutoQueueTab.jsx      # Auto-generated queue (source: seo/spike/tweet/ads) (✅ shell built)
+│   │   ├── ScheduledTab.jsx      # Scheduled content list (✅ built)
+│   │   ├── PublishedTab.jsx      # Published archive with platform links (✅ built)
+│   │   ├── Editor.jsx            # Preview-first editor with Edit toggle for all content types (✅ built)
+│   │   ├── FlagsPanel.jsx        # QA flags panel (✅ built)
+│   │   └── PreviewPane.jsx       # iframe (landing/blog), Twitter card, email inbox, Meta/Google ad mocks (✅ built)
 │   ├── data/
-│   │   └── conditions.js         # Top-50 condition list (static)
+│   │   └── conditions.js         # Top-50 condition list (static) (✅ built)
 │   ├── lib/
-│   │   ├── skills.js             # Fetches skill files from dante-labs-website repo via GitHub API
-│   │   └── conditionTemplate.js  # Populates condition.html template with CMS fields
+│   │   └── skills.js             # Client-side constants: labels, formats, email types, ad platforms (✅ built)
 │   └── styles/
 │       └── index.css
 ├── index.html
@@ -116,21 +116,29 @@ Twitter: topic input + format selector.
 Email: campaign type selector (newsletter / product launch / re-engagement) + key message input.
 Ad Copy: campaign objective + product selector (WGS / RNA / Oncology) + target audience input.
 
-Generate button → calls `/api/generate-content` → on success, item appears in Review Queue tab with a notification. Show loading state during generation (10–20s expected).
+Generate button → calls `/api/generate-content` → on success, item appears in Review Queue tab. Show loading state during generation (10–20s expected). Images are auto-generated server-side for Twitter, blog, and landing pages — no manual button press required.
 
 ### Tab 2: Review Queue
 Manually generated content pending approval. Items with `source: manual`.
 
 List view: content type badge, topic, generated timestamp, QA status badge, flag count.
 
-Click item → inline editor opens:
-- All editable content fields for the content type
-- **PreviewPane** (iframe) for landing pages and blog posts — renders a preview of how the page will look on dantelabs.com using the populated template. For Twitter/email/ad copy: formatted text preview, no iframe.
-- FlagsPanel sidebar — flags colour-coded by severity (LEGAL: red, MEDICAL: amber, BRAND: blue), each with reason and action required
+Click item → editor opens in **Preview mode by default** (preview is the primary view, not the field editor):
+- **Preview pane** is shown first and takes up the full width:
+  - Landing pages + blog posts: iframe rendering the populated template via `/api/preview`
+  - Twitter: Twitter card mock with image
+  - Email: inbox subject/preview line + rendered HTML body
+  - Google Ads: SERP mock with 3 labelled variants (Benefit-led / Problem-aware / Social proof)
+  - Meta Ads: Facebook feed mock with 3 labelled variants
+- **Edit button** in the header toggles to the field editor view
+- **FlagsPanel** always visible below the preview
+- **Image panel** always visible below the preview (for Twitter/blog/landing only)
 - **Mark Ready** button — disabled while any unresolved flags exist. Hard gate, no bypass.
 - **Schedule** button — datetime picker, only available when `status: approved`
-- **Publish Now** button — only available when `status: approved`
-- **Export JSON** button — downloads payload as `{slug}.json`, does not change status
+- **Publish Now** button — only available when `status: approved` (not shown for email/ad_copy)
+- **Export JSON** button — always available, downloads `{slug}.json`
+- **Export HTML** button — email only, downloads body HTML
+- **Copy all variants** button — ad copy only, copies all variants to clipboard
 
 ### Tab 3: Auto Queue
 Auto-generated content pending approval. Items with `source: seo_queue | spike | daily_tweet | social_ads`.
@@ -181,10 +189,13 @@ Skills are Markdown files committed to the `dante-labs-website` repo at `Documen
 ```
 
 1. Fetch appropriate skill(s) from GitHub API (or Redis cache)
-2. Call Anthropic API: `claude-sonnet-4-20250514`, `max_tokens: 4000`
-3. Parse response JSON
-4. Save to Redis: key `content:{type}:{slug}:{timestamp}`
-5. Return full content object
+2. Call Anthropic API: `claude-sonnet-4-6`, `max_tokens` varies by type (twitter: 1500, blog/landing: 8000, email/ad: 3000–4000)
+3. Parse response JSON (extracts from ```json code fence if present)
+4. For Twitter, blog, and landing page: auto-generate image via fal.ai before saving (fail silently if FAL_API_KEY not set)
+5. Save to Redis: key `content:{id}`, id indexed in `content:index` list
+6. Return full content object
+
+**Image prompts** must describe lifestyle editorial photography — real people in natural settings. Never hands in isolation. Never lab equipment. This is enforced in the user prompt sent to Anthropic.
 
 **Content object shape:**
 ```json
@@ -330,11 +341,12 @@ The `condition.html` template (at `public/condition.html` in the `dante-labs-web
   "title": "Is ADHD Genetic?",
   "slug": "is-adhd-genetic",
   "meta_description": "...",
+  "hero_image_alt": "A family discussing genetic test results with a doctor",
   "primary_keyword": "is adhd genetic",
   "structure_variant": "F",
   "word_count": 1500,
   "body_html": "<p>Full article HTML...</p>",
-  "image_prompt": "..."
+  "image_prompt": "Editorial lifestyle photo: [specific scene relevant to topic]. Real people, warm setting. No hands in isolation, no lab equipment."
 }
 ```
 
@@ -344,7 +356,7 @@ The `condition.html` template (at `public/condition.html` in the `dante-labs-web
   "text": "≤280 character tweet",
   "format": "educational | story_led | awareness",
   "character_count": 214,
-  "image_prompt": "...",
+  "image_prompt": "Editorial lifestyle photo: [specific scene]. Real person, warm setting. No hands in isolation, no lab equipment.",
   "brand_check": {
     "no_exclamation_points": true,
     "no_banned_words": true,
@@ -358,31 +370,55 @@ The `condition.html` template (at `public/condition.html` in the `dante-labs-web
 ### Email content
 ```json
 {
-  "subject": "Email subject line",
-  "preview_text": "Preview text ≤90 chars",
+  "subject": "Email subject line (max 60 chars)",
+  "preview_text": "Preview text shown in inbox (max 90 chars)",
   "headline": "Email headline",
-  "body_html": "Full email HTML using Dante email template patterns",
-  "cta_text": "CTA button text",
+  "body_html": "<p>Proper HTML only — no raw \\n escapes. Use p, strong, ul, li tags.</p>",
+  "cta_text": "CTA button label",
   "cta_url": "https://dantelabs.com/genome/"
 }
 ```
 
-### Ad copy content
+### Ad copy content — Google
 ```json
 {
-  "platform": "google | meta",
+  "platform": "google",
   "campaign_objective": "...",
   "variants": [
     {
+      "variant_focus": "Benefit-led",
       "headline_1": "≤30 chars",
       "headline_2": "≤30 chars",
       "headline_3": "≤30 chars",
       "description_1": "≤90 chars",
       "description_2": "≤90 chars"
-    }
+    },
+    { "variant_focus": "Problem-aware", "...": "..." },
+    { "variant_focus": "Social proof", "...": "..." }
   ]
 }
 ```
+
+### Ad copy content — Meta
+```json
+{
+  "platform": "meta",
+  "campaign_objective": "...",
+  "variants": [
+    {
+      "variant_focus": "Benefit-led",
+      "primary_text": "Main feed copy shown above image (max 125 chars)",
+      "headline": "Bold headline below image (max 40 chars)",
+      "description": "Supporting line below headline (max 30 chars)",
+      "cta_button": "Learn More"
+    },
+    { "variant_focus": "Problem-aware", "...": "..." },
+    { "variant_focus": "Social proof", "...": "..." }
+  ]
+}
+```
+
+**Google and Meta use completely different schemas.** Google: headline_1/2/3 + description_1/2. Meta: primary_text + headline + description + cta_button. Each has 3 variants with clearly different angles.
 
 ---
 
@@ -538,11 +574,18 @@ Content Factory UI additional:
 2. **Mark Ready / Publish Now are disabled** while any unresolved QA flags exist. Hard gate.
 3. **`status: published` is never set** without a confirmed successful API response from GitHub or Twitter.
 4. **All external API calls go through server-side `/api/` routes** — no keys reach the client.
-5. **PreviewPane** renders an iframe preview of the populated page template for landing pages and blog posts. It uses a blob URL built from the generated HTML string — no network request to the live site.
-6. **Skill files are loaded from the `dante-labs-website` repo** via GitHub API, cached in Redis for 1 hour.
-7. **If any API key is missing** (FAL, Twitter, Ahrefs): relevant features show a clear "not configured" state, do not throw unhandled errors, do not block other features.
-8. **Velocity rules for SEO queue are enforced server-side**: max 4 items per day, max 20 per week (weeks 1–6), publish times staggered 8am–6pm ET. The cron never exceeds these limits regardless of queue size.
-9. **Deduplication**: before generating any SEO or spike page, check that no existing page in the repo targets the same primary keyword. Use slug matching against the GitHub repo directory listing.
+5. **Preview is the default view** in the Editor. Fields are hidden behind an "Edit" toggle button. The preview is the main thing the user sees.
+6. **PreviewPane** renders:
+   - Landing pages + blog posts: iframe with blob URL from `/api/preview` — no network request to the live site
+   - Twitter: Twitter card mock
+   - Email: inbox header (subject/preview text) + rendered HTML body — body_html must be real HTML, no raw `\n` escapes
+   - Google Ads: SERP mock, 3 variants labelled Benefit-led / Problem-aware / Social proof
+   - Meta Ads: Facebook feed mock (primary_text above image, headline + description + CTA below) — completely different schema from Google
+7. **Image generation is automatic** for Twitter, blog, and landing pages — triggered server-side at the end of `/api/generate-content`, not a separate manual step. Images use lifestyle editorial photography prompts (real people, warm settings). Never hands in isolation. Never lab equipment.
+8. **Skill files are loaded from the `dante-labs-website` repo** via GitHub API, cached in Redis for 1 hour. Brand Voice SKILL (`Documentation/02_Brand/Brand_Voice_SKILL.md`) is loaded as supplementary context for all types, and as the primary system prompt for email and ad copy.
+9. **If any API key is missing** (FAL, Twitter, Ahrefs): relevant features show a clear "not configured" state, do not throw unhandled errors, do not block other features.
+10. **Velocity rules for SEO queue are enforced server-side**: max 4 items per day, max 20 per week (weeks 1–6), publish times staggered 8am–6pm ET. The cron never exceeds these limits regardless of queue size.
+11. **Deduplication**: before generating any SEO or spike page, check that no existing page in the repo targets the same primary keyword. Use slug matching against the GitHub repo directory listing.
 
 ---
 
