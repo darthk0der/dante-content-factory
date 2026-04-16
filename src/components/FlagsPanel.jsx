@@ -10,9 +10,10 @@ export default function FlagsPanel({ item, onResolve }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      {flags.map((flag, i) => {
+      {flags.map((rawFlag, i) => {
+        const flag = typeof rawFlag === 'string' ? { reason: rawFlag, severity: 'warning' } : rawFlag;
         const resolved = !!flag.resolved;
-        const severityClass = `flag-${flag.severity}`;
+        const severityClass = `flag-${flag.severity || 'warning'}`;
         return (
           <div
             key={i}
@@ -39,7 +40,7 @@ export default function FlagsPanel({ item, onResolve }) {
               }
             </div>
             <div style={{ fontSize: '12px', color: 'var(--text)', lineHeight: 1.5, marginBottom: flag.action_required ? '6px' : 0 }}>
-              {flag.reason}
+              {flag.reason || flag.description || flag.message || JSON.stringify(flag)}
             </div>
             {flag.action_required && (
               <div style={{ fontSize: '11px', color: 'var(--muted)', fontStyle: 'italic' }}>
