@@ -65,6 +65,8 @@ export default async function handler(req, res) {
     let html;
     if (item.content_type === 'landing_page') {
       html = await buildConditionPage(item);
+      // Inject base href so relative CSS/images load from the live site
+      html = html.replace('<head>', '<head>\n<base href="https://dantelabs.com/" />');
       // Inject preview banner into the HTML
       html = html.replace('<body', `<body data-preview="true"`);
       html = html.replace(/<body[^>]*>/, (match) => `${match}\n<div style="position:fixed;top:0;left:0;right:0;background:#593159;color:#fff;text-align:center;font-size:12px;padding:6px;z-index:9999;font-family:system-ui">CONTENT FACTORY PREVIEW — NOT PUBLISHED</div><div style="height:30px"></div>`);
