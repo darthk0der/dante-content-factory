@@ -225,6 +225,14 @@ export async function publishItem(item, redisClient) {
     const existing = await githubGetFile(path);
     await githubPutFile(path, html, `content: add condition page — ${item.content.condition_name || item.topic}`, existing?.sha);
     result = { live_url: `https://dantelabs.com/conditions/${condSlug}/` };
+
+  } else if (item.content_type === 'insight') {
+    const html = buildBlogHtml(item); // We reuse the blog layout for insights
+    const insightSlug = item.slug;
+    const path = `public/insights/${insightSlug}/index.html`;
+    const existing = await githubGetFile(path);
+    await githubPutFile(path, html, `content: add reactive insight — ${item.content.title || item.topic}`, existing?.sha);
+    result = { live_url: `https://dantelabs.com/insights/${insightSlug}/` };
   }
 
   item.status       = 'published';

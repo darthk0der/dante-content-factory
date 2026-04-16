@@ -196,7 +196,7 @@ function AdCopyPreview({ item }) {
 
       {isGoogle
         ? variants.map((v, i) => <GoogleAdVariant key={i} v={v} i={i} />)
-        : variants.map((v, i) => <MetaAdVariant key={i} v={v} i={i} />)
+        : variants.map((v, i) => <MetaAdVariant key={i} v={v} i={i} imageUrl={item.image_url} />)
       }
     </div>
   );
@@ -241,7 +241,7 @@ function GoogleAdVariant({ v, i }) {
   );
 }
 
-function MetaAdVariant({ v, i }) {
+function MetaAdVariant({ v, i, imageUrl }) {
   const BADGE_COLORS = ['#dbeafe', '#dcfce7', '#f3e8ff'];
   const BADGE_TEXT   = ['#1e40af', '#166534', '#6b21a8'];
   return (
@@ -257,10 +257,11 @@ function MetaAdVariant({ v, i }) {
         <div style={{ padding: '12px 14px', fontSize: '14px', color: '#1c1e21', lineHeight: 1.5, borderBottom: '1px solid #f0f2f5' }}>
           {v.primary_text || <span style={{ color: '#aaa' }}>Primary text…</span>}
         </div>
-        {/* Image placeholder */}
-        <div style={{ background: 'linear-gradient(135deg, #e8e8e8, #d0d0d0)', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: '12px' }}>
-          Ad image
-        </div>
+        {/* Image */}
+        {imageUrl
+          ? <img src={imageUrl} alt="" style={{ width: '100%', height: '220px', objectFit: 'cover', display: 'block' }} />
+          : <div style={{ background: 'linear-gradient(135deg, #e8e8e8, #d0d0d0)', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: '12px' }}>Generating image…</div>
+        }
         {/* Below-image block */}
         <div style={{ padding: '10px 14px', background: '#f0f2f5', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
           <div>

@@ -105,7 +105,9 @@ Use this exact schema:
   ]
 }
 
-Rules: No exclamation points. No diagnostic claims. No competitor mentions. Each variant must have a clearly different angle.`;
+Rules: No exclamation points. No diagnostic claims. No competitor mentions. Each variant must have a clearly different angle.
+
+Also include a top-level "image_prompt" field describing the ideal ad image: a lifestyle editorial photo of a real person or family relevant to the campaign objective. Warm, natural setting. No hands in isolation, no lab equipment, no text overlays.`;
     }
 
     // Google ads
@@ -337,8 +339,10 @@ export default async function handler(req, res) {
   delete item.content.qa_status;
   delete item.content.image_prompt;
 
-  // Auto-generate image for Twitter, blog, and landing_page
-  if (['twitter', 'blog', 'landing_page'].includes(content_type) && item.image_prompt) {
+  // Auto-generate image for Twitter, blog, landing_page, and Meta ads
+  const autoImageTypes = ['twitter', 'blog', 'landing_page'];
+  const isMetaAd = content_type === 'ad_copy' && ad_platform === 'meta';
+  if ((autoImageTypes.includes(content_type) || isMetaAd) && item.image_prompt) {
     await generateImageForItem(item);
   }
 

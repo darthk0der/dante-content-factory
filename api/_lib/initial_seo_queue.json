@@ -1,0 +1,1226 @@
+[
+  {
+    "id": 1,
+    "week_number": 1,
+    "url": "/blog/methylation-gene-testing-explained/",
+    "slug": "methylation-gene-testing-explained",
+    "primary_keyword": "genetic methylation test / methylation testing",
+    "structure_variant": "B",
+    "target_word_count": 2000
+  },
+  {
+    "id": 2,
+    "week_number": 1,
+    "url": "/blog/genetic-data-privacy-what-consumers-should-know/",
+    "slug": "genetic-data-privacy-what-consumers-should-know",
+    "primary_keyword": "genetic privacy / should i delete my dna data",
+    "structure_variant": "A",
+    "target_word_count": 1500
+  },
+  {
+    "id": 3,
+    "week_number": 1,
+    "url": "/blog/popular-gene-tests-what-they-miss/",
+    "slug": "popular-gene-tests-what-they-miss",
+    "primary_keyword": "methylation test review / popular genetic tests",
+    "structure_variant": "C",
+    "target_word_count": 1500
+  },
+  {
+    "id": 4,
+    "week_number": 1,
+    "url": "/blog/mthfr-gene-mutation-symptoms-signs/",
+    "slug": "mthfr-gene-mutation-symptoms-signs",
+    "primary_keyword": "mthfr gene mutation symptoms",
+    "structure_variant": "E",
+    "target_word_count": 1600
+  },
+  {
+    "id": 5,
+    "week_number": 2,
+    "url": "/blog/what-is-whole-genome-sequencing/",
+    "slug": "what-is-whole-genome-sequencing",
+    "primary_keyword": "what is whole genome sequencing",
+    "structure_variant": "B",
+    "target_word_count": 2200
+  },
+  {
+    "id": 6,
+    "week_number": 2,
+    "url": "/blog/is-autism-genetic/",
+    "slug": "is-autism-genetic",
+    "primary_keyword": "is autism genetic",
+    "structure_variant": "F",
+    "target_word_count": 1800
+  },
+  {
+    "id": 7,
+    "week_number": 2,
+    "url": "/blog/is-depression-genetic/",
+    "slug": "is-depression-genetic",
+    "primary_keyword": "is depression genetic",
+    "structure_variant": "C",
+    "target_word_count": 1400
+  },
+  {
+    "id": 8,
+    "week_number": 2,
+    "url": "/blog/best-whole-genome-sequencing-tests/",
+    "slug": "best-whole-genome-sequencing-tests",
+    "primary_keyword": "best whole genome sequencing",
+    "structure_variant": "D",
+    "target_word_count": 2000
+  },
+  {
+    "id": 9,
+    "week_number": 3,
+    "url": "/blog/what-diseases-detected-genetic-testing/",
+    "slug": "what-diseases-detected-genetic-testing",
+    "primary_keyword": "what diseases can be detected through genetic testing",
+    "structure_variant": "C",
+    "target_word_count": 2000
+  },
+  {
+    "id": 10,
+    "week_number": 3,
+    "url": "/blog/genetic-testing-insurance-coverage/",
+    "slug": "genetic-testing-insurance-coverage",
+    "primary_keyword": "is genetic testing covered by insurance",
+    "structure_variant": "A",
+    "target_word_count": 1500
+  },
+  {
+    "id": 11,
+    "week_number": 3,
+    "url": "/blog/mthfr-gene-mutation-treatment-options/",
+    "slug": "mthfr-gene-mutation-treatment-options",
+    "primary_keyword": "mthfr gene mutation treatment",
+    "structure_variant": "E",
+    "target_word_count": 1500
+  },
+  {
+    "id": 12,
+    "week_number": 3,
+    "url": "/blog/clinical-genetic-testing-after-consumer-dna/",
+    "slug": "clinical-genetic-testing-after-consumer-dna",
+    "primary_keyword": "consumer dna test alternative / upgrade from consumer test",
+    "structure_variant": "B",
+    "target_word_count": 1200
+  },
+  {
+    "id": 13,
+    "week_number": 3,
+    "url": "/blog/is-schizophrenia-genetic/",
+    "slug": "is-schizophrenia-genetic",
+    "primary_keyword": "is schizophrenia genetic",
+    "structure_variant": "C",
+    "target_word_count": 1600
+  },
+  {
+    "id": 14,
+    "week_number": 3,
+    "url": "/blog/is-adhd-genetic/",
+    "slug": "is-adhd-genetic",
+    "primary_keyword": "is adhd genetic",
+    "structure_variant": "F",
+    "target_word_count": 1500
+  },
+  {
+    "id": 15,
+    "week_number": 3,
+    "url": "/blog/is-anxiety-genetic/",
+    "slug": "is-anxiety-genetic",
+    "primary_keyword": "is anxiety genetic",
+    "structure_variant": "A",
+    "target_word_count": 1200
+  },
+  {
+    "id": 16,
+    "week_number": 3,
+    "url": "/blog/is-bipolar-genetic/",
+    "slug": "is-bipolar-genetic",
+    "primary_keyword": "is bipolar disorder genetic",
+    "structure_variant": "E",
+    "target_word_count": 1400
+  },
+  {
+    "id": 17,
+    "week_number": 4,
+    "url": "/blog/how-long-does-genetic-testing-take/",
+    "slug": "how-long-does-genetic-testing-take",
+    "primary_keyword": "how long does genetic testing take",
+    "structure_variant": "A",
+    "target_word_count": 1000
+  },
+  {
+    "id": 18,
+    "week_number": 4,
+    "url": "/blog/mthfr-supplements-what-works/",
+    "slug": "mthfr-supplements-what-works",
+    "primary_keyword": "mthfr gene mutation supplements",
+    "structure_variant": "B",
+    "target_word_count": 1300
+  },
+  {
+    "id": 19,
+    "week_number": 4,
+    "url": "/blog/pharmacogenomics-vs-whole-genome-sequencing/",
+    "slug": "pharmacogenomics-vs-whole-genome-sequencing",
+    "primary_keyword": "pharmacogenomic testing / psychiatric genetic testing",
+    "structure_variant": "D",
+    "target_word_count": 1600
+  },
+  {
+    "id": 20,
+    "week_number": 4,
+    "url": "/blog/genetic-testing-before-pregnancy/",
+    "slug": "genetic-testing-before-pregnancy",
+    "primary_keyword": "genetic testing before pregnancy",
+    "structure_variant": "F",
+    "target_word_count": 1800
+  },
+  {
+    "id": 21,
+    "week_number": 4,
+    "url": "/blog/is-diabetes-genetic/",
+    "slug": "is-diabetes-genetic",
+    "primary_keyword": "is diabetes genetic",
+    "structure_variant": "C",
+    "target_word_count": 1500
+  },
+  {
+    "id": 22,
+    "week_number": 4,
+    "url": "/blog/genetic-testing-for-antidepressants/",
+    "slug": "genetic-testing-for-antidepressants",
+    "primary_keyword": "genetic testing for antidepressants",
+    "structure_variant": "B",
+    "target_word_count": 1400
+  },
+  {
+    "id": 23,
+    "week_number": 4,
+    "url": "/blog/is-dementia-hereditary/",
+    "slug": "is-dementia-hereditary",
+    "primary_keyword": "is dementia hereditary",
+    "structure_variant": "E",
+    "target_word_count": 1600
+  },
+  {
+    "id": 24,
+    "week_number": 4,
+    "url": "/blog/is-alcoholism-genetic/",
+    "slug": "is-alcoholism-genetic",
+    "primary_keyword": "is alcoholism genetic",
+    "structure_variant": "A",
+    "target_word_count": 1200
+  },
+  {
+    "id": 25,
+    "week_number": 4,
+    "url": "/blog/is-ocd-genetic/",
+    "slug": "is-ocd-genetic",
+    "primary_keyword": "is ocd genetic",
+    "structure_variant": "F",
+    "target_word_count": 1100
+  },
+  {
+    "id": 26,
+    "week_number": 4,
+    "url": "/blog/is-ms-genetic/",
+    "slug": "is-ms-genetic",
+    "primary_keyword": "is ms genetic / hereditary",
+    "structure_variant": "C",
+    "target_word_count": 1500
+  },
+  {
+    "id": 27,
+    "week_number": 5,
+    "url": "/blog/is-asthma-genetic/",
+    "slug": "is-asthma-genetic",
+    "primary_keyword": "is asthma genetic",
+    "structure_variant": "F",
+    "target_word_count": 1000
+  },
+  {
+    "id": 28,
+    "week_number": 5,
+    "url": "/blog/what-is-genetic-counseling/",
+    "slug": "what-is-genetic-counseling",
+    "primary_keyword": "what is a genetic counselor / genetic counseling",
+    "structure_variant": "B",
+    "target_word_count": 1800
+  },
+  {
+    "id": 29,
+    "week_number": 5,
+    "url": "/blog/is-epilepsy-genetic/",
+    "slug": "is-epilepsy-genetic",
+    "primary_keyword": "is epilepsy genetic",
+    "structure_variant": "C",
+    "target_word_count": 1400
+  },
+  {
+    "id": 30,
+    "week_number": 5,
+    "url": "/blog/is-high-blood-pressure-genetic/",
+    "slug": "is-high-blood-pressure-genetic",
+    "primary_keyword": "is high blood pressure genetic",
+    "structure_variant": "A",
+    "target_word_count": 1100
+  },
+  {
+    "id": 31,
+    "week_number": 5,
+    "url": "/blog/how-to-test-for-mthfr/",
+    "slug": "how-to-test-for-mthfr",
+    "primary_keyword": "how to test for mthfr gene mutation",
+    "structure_variant": "E",
+    "target_word_count": 1200
+  },
+  {
+    "id": 32,
+    "week_number": 5,
+    "url": "/blog/is-cerebral-palsy-genetic/",
+    "slug": "is-cerebral-palsy-genetic",
+    "primary_keyword": "is cerebral palsy genetic",
+    "structure_variant": "F",
+    "target_word_count": 1200
+  },
+  {
+    "id": 33,
+    "week_number": 5,
+    "url": "/blog/how-genetic-testing-works/",
+    "slug": "how-genetic-testing-works",
+    "primary_keyword": "how is genetic testing done",
+    "structure_variant": "D",
+    "target_word_count": 2000
+  },
+  {
+    "id": 34,
+    "week_number": 5,
+    "url": "/blog/is-down-syndrome-genetic/",
+    "slug": "is-down-syndrome-genetic",
+    "primary_keyword": "is down syndrome genetic",
+    "structure_variant": "B",
+    "target_word_count": 1300
+  },
+  {
+    "id": 35,
+    "week_number": 5,
+    "url": "/blog/is-dyslexia-genetic/",
+    "slug": "is-dyslexia-genetic",
+    "primary_keyword": "is dyslexia genetic",
+    "structure_variant": "C",
+    "target_word_count": 1000
+  },
+  {
+    "id": 36,
+    "week_number": 5,
+    "url": "/blog/mthfr-test-cost/",
+    "slug": "mthfr-test-cost",
+    "primary_keyword": "mthfr gene mutation test cost",
+    "structure_variant": "A",
+    "target_word_count": 900
+  },
+  {
+    "id": 41,
+    "week_number": 6,
+    "url": "/blog/is-scoliosis-genetic/",
+    "slug": "is-scoliosis-genetic",
+    "primary_keyword": "is scoliosis genetic",
+    "structure_variant": "F",
+    "target_word_count": 1100
+  },
+  {
+    "id": 42,
+    "week_number": 6,
+    "url": "/blog/is-vitiligo-genetic/",
+    "slug": "is-vitiligo-genetic",
+    "primary_keyword": "is vitiligo genetic",
+    "structure_variant": "A",
+    "target_word_count": 1000
+  },
+  {
+    "id": 43,
+    "week_number": 6,
+    "url": "/blog/is-alopecia-genetic/",
+    "slug": "is-alopecia-genetic",
+    "primary_keyword": "is alopecia genetic",
+    "structure_variant": "E",
+    "target_word_count": 1200
+  },
+  {
+    "id": 44,
+    "week_number": 6,
+    "url": "/blog/is-eczema-genetic/",
+    "slug": "is-eczema-genetic",
+    "primary_keyword": "is eczema genetic",
+    "structure_variant": "C",
+    "target_word_count": 1000
+  },
+  {
+    "id": 45,
+    "week_number": 6,
+    "url": "/blog/understanding-genetic-test-results/",
+    "slug": "understanding-genetic-test-results",
+    "primary_keyword": "what does genetic testing show",
+    "structure_variant": "B",
+    "target_word_count": 2000
+  },
+  {
+    "id": 46,
+    "week_number": 6,
+    "url": "/blog/is-high-cholesterol-genetic/",
+    "slug": "is-high-cholesterol-genetic",
+    "primary_keyword": "is high cholesterol genetic",
+    "structure_variant": "A",
+    "target_word_count": 1200
+  },
+  {
+    "id": 48,
+    "week_number": 6,
+    "url": "/blog/is-psoriasis-genetic/",
+    "slug": "is-psoriasis-genetic",
+    "primary_keyword": "is psoriasis genetic",
+    "structure_variant": "E",
+    "target_word_count": 1000
+  },
+  {
+    "id": 49,
+    "week_number": 6,
+    "url": "/blog/is-lupus-genetic/",
+    "slug": "is-lupus-genetic",
+    "primary_keyword": "is lupus genetic / hereditary",
+    "structure_variant": "B",
+    "target_word_count": 1400
+  },
+  {
+    "id": 50,
+    "week_number": 6,
+    "url": "/blog/is-pcos-genetic/",
+    "slug": "is-pcos-genetic",
+    "primary_keyword": "is pcos genetic",
+    "structure_variant": "C",
+    "target_word_count": 1200
+  },
+  {
+    "id": 51,
+    "week_number": 6,
+    "url": "/blog/autosomal-dominant-vs-recessive/",
+    "slug": "autosomal-dominant-vs-recessive",
+    "primary_keyword": "autosomal dominant vs autosomal recessive",
+    "structure_variant": "D",
+    "target_word_count": 1500
+  },
+  {
+    "id": 52,
+    "week_number": 6,
+    "url": "/blog/is-addiction-genetic/",
+    "slug": "is-addiction-genetic",
+    "primary_keyword": "is addiction genetic",
+    "structure_variant": "A",
+    "target_word_count": 1300
+  },
+  {
+    "id": 53,
+    "week_number": 7,
+    "url": "/blog/dna-vs-rna/",
+    "slug": "dna-vs-rna",
+    "primary_keyword": "dna vs rna",
+    "structure_variant": "D",
+    "target_word_count": 1800
+  },
+  {
+    "id": 54,
+    "week_number": 7,
+    "url": "/blog/is-diverticulitis-hereditary/",
+    "slug": "is-diverticulitis-hereditary",
+    "primary_keyword": "is diverticulitis hereditary",
+    "structure_variant": "A",
+    "target_word_count": 1100
+  },
+  {
+    "id": 55,
+    "week_number": 7,
+    "url": "/blog/is-gout-hereditary/",
+    "slug": "is-gout-hereditary",
+    "primary_keyword": "is gout hereditary",
+    "structure_variant": "C",
+    "target_word_count": 1000
+  },
+  {
+    "id": 56,
+    "week_number": 7,
+    "url": "/blog/is-arthritis-hereditary/",
+    "slug": "is-arthritis-hereditary",
+    "primary_keyword": "is arthritis hereditary",
+    "structure_variant": "F",
+    "target_word_count": 1100
+  },
+  {
+    "id": 58,
+    "week_number": 7,
+    "url": "/blog/is-bpd-genetic/",
+    "slug": "is-bpd-genetic",
+    "primary_keyword": "is bpd genetic",
+    "structure_variant": "E",
+    "target_word_count": 1200
+  },
+  {
+    "id": 59,
+    "week_number": 7,
+    "url": "/blog/mthfr-signs-in-babies/",
+    "slug": "mthfr-signs-in-babies",
+    "primary_keyword": "mthfr gene mutation signs in babies",
+    "structure_variant": "F",
+    "target_word_count": 1000
+  },
+  {
+    "id": 60,
+    "week_number": 7,
+    "url": "/blog/what-is-next-generation-sequencing/",
+    "slug": "what-is-next-generation-sequencing",
+    "primary_keyword": "what is next generation sequencing",
+    "structure_variant": "D",
+    "target_word_count": 1500
+  },
+  {
+    "id": 61,
+    "week_number": 7,
+    "url": "/blog/is-acne-genetic/",
+    "slug": "is-acne-genetic",
+    "primary_keyword": "is acne genetic",
+    "structure_variant": "A",
+    "target_word_count": 900
+  },
+  {
+    "id": 62,
+    "week_number": 7,
+    "url": "/blog/is-ibs-genetic/",
+    "slug": "is-ibs-genetic",
+    "primary_keyword": "is ibs genetic",
+    "structure_variant": "E",
+    "target_word_count": 1000
+  },
+  {
+    "id": 63,
+    "week_number": 7,
+    "url": "/blog/is-narcolepsy-genetic/",
+    "slug": "is-narcolepsy-genetic",
+    "primary_keyword": "is narcolepsy genetic",
+    "structure_variant": "C",
+    "target_word_count": 1200
+  },
+  {
+    "id": 64,
+    "week_number": 7,
+    "url": "/blog/is-endometriosis-genetic/",
+    "slug": "is-endometriosis-genetic",
+    "primary_keyword": "is endometriosis genetic",
+    "structure_variant": "B",
+    "target_word_count": 1400
+  },
+  {
+    "id": 65,
+    "week_number": 7,
+    "url": "/blog/is-insomnia-hereditary/",
+    "slug": "is-insomnia-hereditary",
+    "primary_keyword": "is insomnia hereditary",
+    "structure_variant": "A",
+    "target_word_count": 900
+  },
+  {
+    "id": 66,
+    "week_number": 7,
+    "url": "/blog/is-macular-degeneration-hereditary/",
+    "slug": "is-macular-degeneration-hereditary",
+    "primary_keyword": "is macular degeneration hereditary",
+    "structure_variant": "F",
+    "target_word_count": 1200
+  },
+  {
+    "id": 67,
+    "week_number": 7,
+    "url": "/blog/is-glaucoma-hereditary/",
+    "slug": "is-glaucoma-hereditary",
+    "primary_keyword": "is glaucoma hereditary",
+    "structure_variant": "C",
+    "target_word_count": 1100
+  },
+  {
+    "id": 68,
+    "week_number": 8,
+    "url": "/blog/is-obesity-genetic/",
+    "slug": "is-obesity-genetic",
+    "primary_keyword": "is obesity genetic",
+    "structure_variant": "B",
+    "target_word_count": 1200
+  },
+  {
+    "id": 69,
+    "week_number": 8,
+    "url": "/blog/is-afib-hereditary/",
+    "slug": "is-afib-hereditary",
+    "primary_keyword": "is afib hereditary",
+    "structure_variant": "A",
+    "target_word_count": 1100
+  },
+  {
+    "id": 70,
+    "week_number": 8,
+    "url": "/blog/are-strokes-hereditary/",
+    "slug": "are-strokes-hereditary",
+    "primary_keyword": "are strokes hereditary",
+    "structure_variant": "F",
+    "target_word_count": 1300
+  },
+  {
+    "id": 71,
+    "week_number": 8,
+    "url": "/blog/is-vertigo-hereditary/",
+    "slug": "is-vertigo-hereditary",
+    "primary_keyword": "is vertigo hereditary",
+    "structure_variant": "E",
+    "target_word_count": 900
+  },
+  {
+    "id": 72,
+    "week_number": 8,
+    "url": "/blog/are-allergies-hereditary/",
+    "slug": "are-allergies-hereditary",
+    "primary_keyword": "are allergies hereditary",
+    "structure_variant": "C",
+    "target_word_count": 1000
+  },
+  {
+    "id": 73,
+    "week_number": 8,
+    "url": "/blog/are-migraines-hereditary/",
+    "slug": "are-migraines-hereditary",
+    "primary_keyword": "are migraines hereditary",
+    "structure_variant": "A",
+    "target_word_count": 1000
+  },
+  {
+    "id": 74,
+    "week_number": 8,
+    "url": "/blog/is-lewy-body-dementia-hereditary/",
+    "slug": "is-lewy-body-dementia-hereditary",
+    "primary_keyword": "is lewy body dementia hereditary",
+    "structure_variant": "B",
+    "target_word_count": 1300
+  },
+  {
+    "id": 75,
+    "week_number": 8,
+    "url": "/blog/are-aneurysms-hereditary/",
+    "slug": "are-aneurysms-hereditary",
+    "primary_keyword": "are aneurysms hereditary",
+    "structure_variant": "F",
+    "target_word_count": 1200
+  },
+  {
+    "id": 76,
+    "week_number": 8,
+    "url": "/blog/is-fibromyalgia-hereditary/",
+    "slug": "is-fibromyalgia-hereditary",
+    "primary_keyword": "is fibromyalgia hereditary",
+    "structure_variant": "E",
+    "target_word_count": 1100
+  },
+  {
+    "id": 77,
+    "week_number": 8,
+    "url": "/blog/genetic-predisposition-explained/",
+    "slug": "genetic-predisposition-explained",
+    "primary_keyword": "genetic predisposition / meaning",
+    "structure_variant": "B",
+    "target_word_count": 1600
+  },
+  {
+    "id": 78,
+    "week_number": 8,
+    "url": "/blog/is-pots-hereditary/",
+    "slug": "is-pots-hereditary",
+    "primary_keyword": "is pots hereditary",
+    "structure_variant": "C",
+    "target_word_count": 1200
+  },
+  {
+    "id": 79,
+    "week_number": 8,
+    "url": "/blog/is-sleep-apnea-hereditary/",
+    "slug": "is-sleep-apnea-hereditary",
+    "primary_keyword": "is sleep apnea hereditary",
+    "structure_variant": "A",
+    "target_word_count": 1000
+  },
+  {
+    "id": 80,
+    "week_number": 8,
+    "url": "/blog/is-hypothyroidism-genetic/",
+    "slug": "is-hypothyroidism-genetic",
+    "primary_keyword": "is hypothyroidism genetic",
+    "structure_variant": "F",
+    "target_word_count": 1400
+  },
+  {
+    "id": 81,
+    "week_number": 8,
+    "url": "/blog/is-pancreatic-cancer-hereditary/",
+    "slug": "is-pancreatic-cancer-hereditary",
+    "primary_keyword": "is pancreatic cancer hereditary",
+    "structure_variant": "B",
+    "target_word_count": 1500
+  },
+  {
+    "id": 82,
+    "week_number": 8,
+    "url": "/blog/is-colon-cancer-hereditary/",
+    "slug": "is-colon-cancer-hereditary",
+    "primary_keyword": "is colon cancer hereditary",
+    "structure_variant": "C",
+    "target_word_count": 1400
+  },
+  {
+    "id": 83,
+    "week_number": 9,
+    "url": "/blog/is-breast-cancer-hereditary/",
+    "slug": "is-breast-cancer-hereditary",
+    "primary_keyword": "is breast cancer hereditary",
+    "structure_variant": "F",
+    "target_word_count": 1400
+  },
+  {
+    "id": 84,
+    "week_number": 9,
+    "url": "/blog/is-ovarian-cancer-hereditary/",
+    "slug": "is-ovarian-cancer-hereditary",
+    "primary_keyword": "is ovarian cancer hereditary",
+    "structure_variant": "A",
+    "target_word_count": 1100
+  },
+  {
+    "id": 85,
+    "week_number": 9,
+    "url": "/blog/is-prostate-cancer-hereditary/",
+    "slug": "is-prostate-cancer-hereditary",
+    "primary_keyword": "is prostate cancer hereditary",
+    "structure_variant": "B",
+    "target_word_count": 1300
+  },
+  {
+    "id": 86,
+    "week_number": 9,
+    "url": "/blog/is-lung-cancer-hereditary/",
+    "slug": "is-lung-cancer-hereditary",
+    "primary_keyword": "is lung cancer hereditary",
+    "structure_variant": "E",
+    "target_word_count": 1100
+  },
+  {
+    "id": 87,
+    "week_number": 9,
+    "url": "/blog/is-thyroid-cancer-hereditary/",
+    "slug": "is-thyroid-cancer-hereditary",
+    "primary_keyword": "is thyroid cancer hereditary",
+    "structure_variant": "C",
+    "target_word_count": 1100
+  },
+  {
+    "id": 88,
+    "week_number": 9,
+    "url": "/blog/is-melanoma-hereditary/",
+    "slug": "is-melanoma-hereditary",
+    "primary_keyword": "is melanoma hereditary",
+    "structure_variant": "A",
+    "target_word_count": 1000
+  },
+  {
+    "id": 89,
+    "week_number": 9,
+    "url": "/blog/is-bladder-cancer-hereditary/",
+    "slug": "is-bladder-cancer-hereditary",
+    "primary_keyword": "is bladder cancer hereditary",
+    "structure_variant": "F",
+    "target_word_count": 1000
+  },
+  {
+    "id": 90,
+    "week_number": 9,
+    "url": "/blog/is-lymphoma-hereditary/",
+    "slug": "is-lymphoma-hereditary",
+    "primary_keyword": "is lymphoma hereditary",
+    "structure_variant": "E",
+    "target_word_count": 1000
+  },
+  {
+    "id": 91,
+    "week_number": 9,
+    "url": "/blog/is-leukemia-hereditary/",
+    "slug": "is-leukemia-hereditary",
+    "primary_keyword": "is leukemia hereditary",
+    "structure_variant": "B",
+    "target_word_count": 1200
+  },
+  {
+    "id": 92,
+    "week_number": 9,
+    "url": "/blog/is-multiple-myeloma-hereditary/",
+    "slug": "is-multiple-myeloma-hereditary",
+    "primary_keyword": "is multiple myeloma hereditary",
+    "structure_variant": "C",
+    "target_word_count": 1200
+  },
+  {
+    "id": 93,
+    "week_number": 9,
+    "url": "/blog/are-brain-tumors-hereditary/",
+    "slug": "are-brain-tumors-hereditary",
+    "primary_keyword": "are brain tumors hereditary",
+    "structure_variant": "A",
+    "target_word_count": 1100
+  },
+  {
+    "id": 94,
+    "week_number": 9,
+    "url": "/blog/is-skin-cancer-hereditary/",
+    "slug": "is-skin-cancer-hereditary",
+    "primary_keyword": "is skin cancer hereditary",
+    "structure_variant": "F",
+    "target_word_count": 1000
+  },
+  {
+    "id": 95,
+    "week_number": 9,
+    "url": "/blog/is-bone-cancer-hereditary/",
+    "slug": "is-bone-cancer-hereditary",
+    "primary_keyword": "is bone cancer hereditary",
+    "structure_variant": "E",
+    "target_word_count": 1000
+  },
+  {
+    "id": 96,
+    "week_number": 9,
+    "url": "/blog/what-is-carrier-screening/",
+    "slug": "what-is-carrier-screening",
+    "primary_keyword": "carrier screening / what is carrier screening",
+    "structure_variant": "B",
+    "target_word_count": 1600
+  },
+  {
+    "id": 97,
+    "week_number": 9,
+    "url": "/blog/is-cervical-cancer-hereditary/",
+    "slug": "is-cervical-cancer-hereditary",
+    "primary_keyword": "is cervical cancer hereditary",
+    "structure_variant": "C",
+    "target_word_count": 1000
+  },
+  {
+    "id": 98,
+    "week_number": 10,
+    "url": "/blog/is-crohns-hereditary/",
+    "slug": "is-crohns-hereditary",
+    "primary_keyword": "is crohn's disease hereditary",
+    "structure_variant": "A",
+    "target_word_count": 1200
+  },
+  {
+    "id": 99,
+    "week_number": 10,
+    "url": "/blog/is-gerd-hereditary/",
+    "slug": "is-gerd-hereditary",
+    "primary_keyword": "is gerd hereditary",
+    "structure_variant": "E",
+    "target_word_count": 900
+  },
+  {
+    "id": 100,
+    "week_number": 10,
+    "url": "/blog/are-hemorrhoids-genetic/",
+    "slug": "are-hemorrhoids-genetic",
+    "primary_keyword": "are hemorrhoids genetic",
+    "structure_variant": "C",
+    "target_word_count": 900
+  },
+  {
+    "id": 101,
+    "week_number": 10,
+    "url": "/blog/is-infertility-genetic/",
+    "slug": "is-infertility-genetic",
+    "primary_keyword": "is infertility genetic",
+    "structure_variant": "F",
+    "target_word_count": 1100
+  },
+  {
+    "id": 102,
+    "week_number": 10,
+    "url": "/blog/is-rosacea-genetic/",
+    "slug": "is-rosacea-genetic",
+    "primary_keyword": "is rosacea genetic",
+    "structure_variant": "A",
+    "target_word_count": 900
+  },
+  {
+    "id": 103,
+    "week_number": 10,
+    "url": "/blog/is-osteoporosis-hereditary/",
+    "slug": "is-osteoporosis-hereditary",
+    "primary_keyword": "is osteoporosis hereditary",
+    "structure_variant": "B",
+    "target_word_count": 1100
+  },
+  {
+    "id": 104,
+    "week_number": 10,
+    "url": "/blog/is-tourettes-hereditary/",
+    "slug": "is-tourettes-hereditary",
+    "primary_keyword": "is tourettes hereditary",
+    "structure_variant": "E",
+    "target_word_count": 1100
+  },
+  {
+    "id": 105,
+    "week_number": 10,
+    "url": "/blog/are-blood-clots-hereditary/",
+    "slug": "are-blood-clots-hereditary",
+    "primary_keyword": "are blood clots hereditary",
+    "structure_variant": "C",
+    "target_word_count": 1100
+  },
+  {
+    "id": 106,
+    "week_number": 10,
+    "url": "/blog/is-heart-disease-hereditary/",
+    "slug": "is-heart-disease-hereditary",
+    "primary_keyword": "is heart disease hereditary",
+    "structure_variant": "F",
+    "target_word_count": 1200
+  },
+  {
+    "id": 107,
+    "week_number": 10,
+    "url": "/blog/is-anemia-hereditary/",
+    "slug": "is-anemia-hereditary",
+    "primary_keyword": "is anemia hereditary",
+    "structure_variant": "A",
+    "target_word_count": 1000
+  },
+  {
+    "id": 108,
+    "week_number": 10,
+    "url": "/blog/is-congestive-heart-failure-hereditary/",
+    "slug": "is-congestive-heart-failure-hereditary",
+    "primary_keyword": "is congestive heart failure hereditary",
+    "structure_variant": "B",
+    "target_word_count": 1200
+  },
+  {
+    "id": 109,
+    "week_number": 10,
+    "url": "/blog/is-copd-hereditary/",
+    "slug": "is-copd-hereditary",
+    "primary_keyword": "is copd hereditary",
+    "structure_variant": "E",
+    "target_word_count": 1100
+  },
+  {
+    "id": 110,
+    "week_number": 10,
+    "url": "/blog/is-kidney-disease-hereditary/",
+    "slug": "is-kidney-disease-hereditary",
+    "primary_keyword": "is kidney disease hereditary",
+    "structure_variant": "C",
+    "target_word_count": 1200
+  },
+  {
+    "id": 111,
+    "week_number": 10,
+    "url": "/blog/dna-upload-raw-data-analysis/",
+    "slug": "dna-upload-raw-data-analysis",
+    "primary_keyword": "upload raw dna data / free dna upload sites",
+    "structure_variant": "D",
+    "target_word_count": 1500
+  },
+  {
+    "id": 112,
+    "week_number": 10,
+    "url": "/blog/is-scleroderma-hereditary/",
+    "slug": "is-scleroderma-hereditary",
+    "primary_keyword": "is scleroderma hereditary",
+    "structure_variant": "F",
+    "target_word_count": 1000
+  },
+  {
+    "id": 113,
+    "week_number": 11,
+    "url": "/blog/is-graves-disease-hereditary/",
+    "slug": "is-graves-disease-hereditary",
+    "primary_keyword": "is graves disease hereditary",
+    "structure_variant": "A",
+    "target_word_count": 1100
+  },
+  {
+    "id": 114,
+    "week_number": 11,
+    "url": "/blog/is-degenerative-disc-disease-hereditary/",
+    "slug": "is-degenerative-disc-disease-hereditary",
+    "primary_keyword": "is degenerative disc disease hereditary",
+    "structure_variant": "E",
+    "target_word_count": 1000
+  },
+  {
+    "id": 115,
+    "week_number": 11,
+    "url": "/blog/is-menieres-disease-hereditary/",
+    "slug": "is-menieres-disease-hereditary",
+    "primary_keyword": "is meniere's disease hereditary",
+    "structure_variant": "C",
+    "target_word_count": 1000
+  },
+  {
+    "id": 116,
+    "week_number": 11,
+    "url": "/blog/is-cll-hereditary/",
+    "slug": "is-cll-hereditary",
+    "primary_keyword": "is cll hereditary",
+    "structure_variant": "B",
+    "target_word_count": 1000
+  },
+  {
+    "id": 117,
+    "week_number": 11,
+    "url": "/blog/is-mds-hereditary/",
+    "slug": "is-mds-hereditary",
+    "primary_keyword": "is mds hereditary",
+    "structure_variant": "F",
+    "target_word_count": 1000
+  },
+  {
+    "id": 118,
+    "week_number": 11,
+    "url": "/blog/are-fibroids-hereditary/",
+    "slug": "are-fibroids-hereditary",
+    "primary_keyword": "are fibroids hereditary",
+    "structure_variant": "A",
+    "target_word_count": 1100
+  },
+  {
+    "id": 119,
+    "week_number": 11,
+    "url": "/blog/is-tinnitus-hereditary/",
+    "slug": "is-tinnitus-hereditary",
+    "primary_keyword": "is tinnitus hereditary",
+    "structure_variant": "E",
+    "target_word_count": 900
+  },
+  {
+    "id": 120,
+    "week_number": 11,
+    "url": "/blog/is-celiac-hereditary/",
+    "slug": "is-celiac-hereditary",
+    "primary_keyword": "is celiac disease hereditary",
+    "structure_variant": "B",
+    "target_word_count": 1200
+  },
+  {
+    "id": 121,
+    "week_number": 11,
+    "url": "/blog/is-narcissism-genetic/",
+    "slug": "is-narcissism-genetic",
+    "primary_keyword": "is narcissism genetic",
+    "structure_variant": "C",
+    "target_word_count": 1200
+  },
+  {
+    "id": 122,
+    "week_number": 11,
+    "url": "/blog/is-cancer-hereditary/",
+    "slug": "is-cancer-hereditary",
+    "primary_keyword": "is cancer hereditary",
+    "structure_variant": "F",
+    "target_word_count": 1500
+  },
+  {
+    "id": 123,
+    "week_number": 11,
+    "url": "/blog/comt-gene-explained/",
+    "slug": "comt-gene-explained",
+    "primary_keyword": "comt gene mutation",
+    "structure_variant": "B",
+    "target_word_count": 1500
+  },
+  {
+    "id": 124,
+    "week_number": 11,
+    "url": "/blog/is-als-hereditary/",
+    "slug": "is-als-hereditary",
+    "primary_keyword": "is als hereditary",
+    "structure_variant": "A",
+    "target_word_count": 1400
+  },
+  {
+    "id": 125,
+    "week_number": 11,
+    "url": "/blog/is-eoe-hereditary/",
+    "slug": "is-eoe-hereditary",
+    "primary_keyword": "is eoe hereditary",
+    "structure_variant": "E",
+    "target_word_count": 1000
+  },
+  {
+    "id": 126,
+    "week_number": 11,
+    "url": "/blog/what-is-genetic-testing/",
+    "slug": "what-is-genetic-testing",
+    "primary_keyword": "what is genetic testing",
+    "structure_variant": "D",
+    "target_word_count": 2000
+  },
+  {
+    "id": 127,
+    "week_number": 11,
+    "url": "/blog/is-non-hodgkins-lymphoma-hereditary/",
+    "slug": "is-non-hodgkins-lymphoma-hereditary",
+    "primary_keyword": "is non hodgkin's lymphoma hereditary",
+    "structure_variant": "C",
+    "target_word_count": 1000
+  },
+  {
+    "id": 128,
+    "week_number": 12,
+    "url": "/blog/what-is-a-genetic-variant/",
+    "slug": "what-is-a-genetic-variant",
+    "primary_keyword": "genetic variant / VUS / pathogenic variant",
+    "structure_variant": "D",
+    "target_word_count": 1600
+  },
+  {
+    "id": 129,
+    "week_number": 12,
+    "url": "/blog/is-hashimotos-genetic/",
+    "slug": "is-hashimotos-genetic",
+    "primary_keyword": "is hashimoto's genetic",
+    "structure_variant": "A",
+    "target_word_count": 1200
+  },
+  {
+    "id": 130,
+    "week_number": 12,
+    "url": "/blog/genetic-testing-for-depression/",
+    "slug": "genetic-testing-for-depression",
+    "primary_keyword": "genetic testing for depression",
+    "structure_variant": "B",
+    "target_word_count": 1300
+  },
+  {
+    "id": 131,
+    "week_number": 12,
+    "url": "/blog/is-osteoarthritis-hereditary/",
+    "slug": "is-osteoarthritis-hereditary",
+    "primary_keyword": "is osteoarthritis hereditary",
+    "structure_variant": "E",
+    "target_word_count": 1000
+  },
+  {
+    "id": 132,
+    "week_number": 12,
+    "url": "/blog/is-diabetes-hereditary/",
+    "slug": "is-diabetes-hereditary",
+    "primary_keyword": "is diabetes hereditary",
+    "structure_variant": "F",
+    "target_word_count": 1200
+  },
+  {
+    "id": 133,
+    "week_number": 12,
+    "url": "/blog/are-kidney-stones-hereditary/",
+    "slug": "are-kidney-stones-hereditary",
+    "primary_keyword": "are kidney stones hereditary",
+    "structure_variant": "C",
+    "target_word_count": 1000
+  },
+  {
+    "id": 134,
+    "week_number": 12,
+    "url": "/blog/genetic-testing-for-mental-health-medications/",
+    "slug": "genetic-testing-for-mental-health-medications",
+    "primary_keyword": "genetic testing for mental health medications",
+    "structure_variant": "B",
+    "target_word_count": 1400
+  },
+  {
+    "id": 135,
+    "week_number": 12,
+    "url": "/blog/is-astigmatism-genetic/",
+    "slug": "is-astigmatism-genetic",
+    "primary_keyword": "is astigmatism genetic",
+    "structure_variant": "A",
+    "target_word_count": 1000
+  },
+  {
+    "id": 136,
+    "week_number": 12,
+    "url": "/blog/genetic-testing-for-cancer-explained/",
+    "slug": "genetic-testing-for-cancer-explained",
+    "primary_keyword": "genetic testing for cancer",
+    "structure_variant": "D",
+    "target_word_count": 2000
+  },
+  {
+    "id": 137,
+    "week_number": 12,
+    "url": "/blog/is-spinal-stenosis-hereditary/",
+    "slug": "is-spinal-stenosis-hereditary",
+    "primary_keyword": "is spinal stenosis hereditary",
+    "structure_variant": "E",
+    "target_word_count": 1000
+  },
+  {
+    "id": 138,
+    "week_number": 12,
+    "url": "/blog/is-gum-disease-hereditary/",
+    "slug": "is-gum-disease-hereditary",
+    "primary_keyword": "is gum disease hereditary",
+    "structure_variant": "C",
+    "target_word_count": 900
+  },
+  {
+    "id": 139,
+    "week_number": 12,
+    "url": "/blog/best-dna-test-health/",
+    "slug": "best-dna-test-health",
+    "primary_keyword": "best dna test for health",
+    "structure_variant": "D",
+    "target_word_count": 1800
+  },
+  {
+    "id": 140,
+    "week_number": 12,
+    "url": "/blog/is-bipolar-from-mother-or-father/",
+    "slug": "is-bipolar-from-mother-or-father",
+    "primary_keyword": "is bipolar genetic from mother or father",
+    "structure_variant": "F",
+    "target_word_count": 1100
+  },
+  {
+    "id": 141,
+    "week_number": 12,
+    "url": "/blog/are-bunions-hereditary/",
+    "slug": "are-bunions-hereditary",
+    "primary_keyword": "are bunions hereditary",
+    "structure_variant": "A",
+    "target_word_count": 900
+  },
+  {
+    "id": 142,
+    "week_number": 12,
+    "url": "/blog/is-autism-hereditary/",
+    "slug": "is-autism-hereditary",
+    "primary_keyword": "is autism hereditary",
+    "structure_variant": "B",
+    "target_word_count": 1400
+  }
+]
