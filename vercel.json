@@ -1,0 +1,14 @@
+{
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "functions": {
+    "api/*.js": { "maxDuration": 120 }
+  },
+  "crons": [
+    { "path": "/api/cron-publish",      "schedule": "*/5 * * * *" },
+    { "path": "/api/cron-daily-tweet",  "schedule": "0 9 * * *" },
+    { "path": "/api/cron-seo-queue",    "schedule": "0 8 * * 1" },
+    { "path": "/api/cron-spike-detect", "schedule": "0 7 * * *" }
+  ]
+}
