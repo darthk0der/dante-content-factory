@@ -1,5 +1,5 @@
 import { redis } from './_lib/redis.js';
-import { buildConditionPage } from './_lib/conditionTemplate.js';
+import { buildConditionPage, buildCampaignLandingPageHtml } from './_lib/conditionTemplate.js';
 
 const OWNER = process.env.GITHUB_REPO_OWNER || 'dante-labs';
 const REPO  = process.env.GITHUB_REPO_NAME  || 'dante-labs-website';
@@ -233,6 +233,13 @@ export async function publishItem(item, redisClient) {
     const existing = await githubGetFile(path);
     await githubPutFile(path, html, `content: add reactive insight — ${item.content.title || item.topic}`, existing?.sha);
     result = { live_url: `https://dantelabs.com/insights/${insightSlug}/` };
+
+  } else if (item.content_type === 'campaign_landing_page') {
+    const html = await buildCampaignLandingPageHtml(item);
+    const path = `public/${item.slug}/index.html`;
+    const existing = await githubGetFile(path);
+    await githubPutFile(path, html, `content: add campaign funnel — ${item.topic}`, existing?.sha);
+    result = { live_url: `https://dantelabs.com/${item.slug}/` };
   }
 
   item.status       = 'published';

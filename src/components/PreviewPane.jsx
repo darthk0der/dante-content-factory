@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 export default function PreviewPane({ item }) {
-  const needsIframe = item.content_type === 'landing_page' || item.content_type === 'blog' || item.content_type === 'insight';
+  const needsIframe = item.content_type === 'landing_page' || item.content_type === 'blog' || item.content_type === 'insight' || item.content_type === 'campaign_landing_page';
   if (needsIframe) return <IframePreview item={item} />;
   return <TextPreview item={item} />;
 }

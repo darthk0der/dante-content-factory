@@ -1,5 +1,5 @@
 import { redis } from './_lib/redis.js';
-import { buildConditionPage } from './_lib/conditionTemplate.js';
+import { buildConditionPage, buildCampaignLandingPageHtml } from './_lib/conditionTemplate.js';
 
 function esc(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -57,14 +57,14 @@ export default async function handler(req, res) {
   if (!raw) return res.status(404).json({ error: 'Item not found' });
   const item = typeof raw === 'string' ? JSON.parse(raw) : raw;
 
-  if (item.content_type !== 'landing_page' && item.content_type !== 'blog') {
-    return res.status(400).json({ error: 'Preview only available for landing_page and blog content types' });
+  if (!['landing_page', 'blog', 'insight', 'campaign_landing_page'].includes(item.content_type)) {
+    return res.status(400).json({ error: 'Preview not available for this content type' });
   }
 
   try {
     let html;
-    if (item.content_type === 'landing_page') {
-      html = await buildConditionPage(item);
+    if (item.content_type === 'landing_page' || item.content_type === 'campaign_landing_page') {
+      html = item.content_type === 'landing_page' ? await buildConditionPage(item) : await buildCampaignLandingPageHtml(item);
       // Inject base href so relative CSS/images load from the live site
       html = html.replace('<head>', '<head>\n<base href="https://dantelabs.com/" />');
       // Inject preview banner into the HTML

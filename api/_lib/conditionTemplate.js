@@ -15,6 +15,18 @@ async function fetchTemplate() {
   return res.text();
 }
 
+async function fetchWgsTemplate() {
+  const url = `${GITHUB_BASE}/repos/${OWNER}/${REPO}/contents/public/whole-genome-sequencing.html`;
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `token ${process.env.GITHUB_TOKEN}`,
+      Accept: 'application/vnd.github.v3.raw',
+    },
+  });
+  if (!res.ok) throw new Error(`Failed to fetch WGS template: ${res.status}`);
+  return res.text();
+}
+
 function escHtml(str) {
   return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -85,6 +97,68 @@ export async function buildConditionPage(item) {
     html = html.replace(/<img([^>]*class="[^"]*cond-hero[^"]*"[^>]*)src="[^"]*"/g,
       `<img$1src="${item.image_url}"`);
   }
+
+  return html;
+}
+
+export async function buildCampaignLandingPageHtml(item) {
+  const c = item.content; // CMS fields object
+  let html = await fetchWgsTemplate();
+
+  // ── SEO / head substitutions ──────────────────────────────────────────────
+  html = replaceAttr(html, 'title', null, c.seo_title, 'inner');
+  html = replaceAttr(html, 'meta[name="description"]', 'content', c.seo_description);
+  html = replaceAttr(html, 'link[rel="canonical"]', 'href', c.canonical_url);
+  html = replaceAttr(html, 'meta[property="og:url"]', 'content', c.canonical_url);
+  html = replaceAttr(html, 'meta[property="og:title"]', 'content', c.seo_title);
+  html = replaceAttr(html, 'meta[property="og:description"]', 'content', c.seo_description);
+  html = replaceAttr(html, 'meta[name="twitter:title"]', 'content', c.seo_title);
+  html = replaceAttr(html, 'meta[name="twitter:description"]', 'content', c.seo_description);
+
+  // ── Strip Nav ─────────────────────────────────────────────────────────────
+  html = html.replace(/<\/style>/i, `
+/* ─── Campaign nav: logo only ────────────────────────── */
+.nav-links, .nav-right-group, .nav-mobile-toggle { display: none !important; }
+</style>`);
+
+  // ── Hero CTAs ─────────────────────────────────────────────────────────────
+  const promoCode = c.promo_code || '';
+  const offerLabel = c.offer_label || 'Special Offer';
+  const heroCtaHtml = \`<div class="cta-group hero-entrance" style="--entrance-order: 1; margin-top: 40px;">
+  <a href="#what-you-receive" class="btn btn-hero" id="hero-cta-primary">
+    See what's included
+  </a>
+  <a href="/genome/?promo=\${promoCode}" class="btn btn-primary" id="hero-cta-secondary">
+    Get your Genome (\${offerLabel})
+  </a>
+</div>\`;
+  html = html.replace(/<div class="cta-group[^>]*>[\\s\\S]*?(?=<\\/div>)<\\/div>/i, heroCtaHtml);
+
+  // ── Final CTA Block ───────────────────────────────────────────────────────
+  const wgsCtaHtml = \`<a href="/genome/?promo=\${promoCode}" class="btn btn-primary" id="wgs-cta-block-primary"
+  style="font-size: 15px; padding: 15px 28px;">
+  Order your Genome — \${offerLabel}
+</a>
+<p class="cta-mobile-micro">Use code <strong>\${promoCode}</strong> at checkout · Ships within 48 hours</p>\`;
+  html = html.replace(/<a href="\\/genome\\/[^"]*" class="btn btn-primary" id="wgs-cta-block-primary"[^>]*>[\\s\\S]*?<\\/a>\\s*(<p class="cta-mobile-micro">[\\s\\S]*?<\\/p>)?/i, wgsCtaHtml);
+
+  // ── GA4 Tracking ──────────────────────────────────────────────────────────
+  const ga4Html = \`<script>
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    var eventData = {
+      source:   params.get('utm_source')   || 'direct',
+      medium:   params.get('utm_medium')   || 'none',
+      campaign: params.get('utm_campaign') || '\${item.slug}',
+      content:  params.get('utm_content')  || ''
+    };
+    if (typeof gtag === 'function') {
+      gtag('event', 'campaign_page_view', eventData);
+    }
+  })();
+</script>
+</body>\`;
+  html = html.replace(/<\\/body>/i, ga4Html);
 
   return html;
 }
