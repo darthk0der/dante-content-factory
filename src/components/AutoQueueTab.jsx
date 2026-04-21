@@ -29,7 +29,7 @@ function StatusBadge({ item }) {
   return <span className={`badge ${cls}`}>{label}</span>;
 }
 
-export default function AutoQueueTab({ items, onUpdate, onPublish, onSchedule, onDelete }) {
+export default function AutoQueueTab({ items, onUpdate, onPublish, onSchedule, onDelete, title = "Auto Queue", emptyIcon = "⚙️", emptyMessage = "Auto-generated content from SEO queue, spike detection, daily tweets, and social ads will appear here for review." }) {
   const [openId, setOpenId] = useState(null);
 
   const queue = items.filter((i) =>
@@ -55,11 +55,10 @@ export default function AutoQueueTab({ items, onUpdate, onPublish, onSchedule, o
   if (queue.length === 0) {
     return (
       <div className="empty-state">
-        <div style={{ fontSize: '28px' }}>⚙️</div>
-        <div>Auto Queue is empty</div>
+        <div style={{ fontSize: '28px' }}>{emptyIcon}</div>
+        <div>{title} is empty</div>
         <div style={{ fontSize: '12px', color: 'var(--muted)', textAlign: 'center', maxWidth: '360px' }}>
-          Auto-generated content from SEO queue, spike detection, daily tweets, and social ads will appear here for review.
-          These pipelines activate in Phase 2.
+          {emptyMessage}
         </div>
       </div>
     );
@@ -68,7 +67,7 @@ export default function AutoQueueTab({ items, onUpdate, onPublish, onSchedule, o
   return (
     <div>
       <div className="page-title">
-        Auto Queue{' '}
+        {title}{' '}
         <span style={{ fontSize: '14px', fontWeight: 400, color: 'var(--muted)' }}>({queue.length})</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>

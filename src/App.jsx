@@ -147,6 +147,9 @@ export default function App() {
                 onPublish={handlePublish}
                 onSchedule={handleSchedule}
                 onDelete={removeItem}
+                title="Trend Hub"
+                emptyIcon="📈"
+                emptyMessage="Trending Insights will appear here when triggered by the SEO or Social listening pipelines."
               />
             )}
             {tab === 'auto' && (
