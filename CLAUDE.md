@@ -28,10 +28,10 @@ UI scaffold, Generate tab, Review Queue tab, Auto Queue tab (shell), Scheduled t
 **Phase 2 — Auto Queue + SEO engine**
 Fill in the Auto Queue tab with real data. SEO blog queue cron, weekly Ahrefs keyword scan, reactive spike detection, daily automated X post cron.
 
-**Phase 3 — Social listening integration + ARRCC endpoint**
-Add `GET /api/social-trending` to the ARRCC project (separate deployment), wire paid ads from social listening into the Content Factory Auto Queue.
+**Phase 3 — Social listening integration & Trend Hub** ✅ COMPLETE
+Added `GET /api/social-trending` to the ARRCC project (separate deployment). Unified ARRCC social signals and Ahrefs SEO signals into a single "Trend Hub" via `_lib/insightBundleHelper.js`. Generates complete `insight_bundle` packages (Blog, Meta Ads, Google Ads, Landing Page Funnel) in a single workflow.
 
-Do not start Phase 2 until Phase 1 is confirmed working. Do not start Phase 3 until Phase 2 is confirmed working.
+All phases are now complete.
 
 ---
 
@@ -46,11 +46,15 @@ dante-content-factory/
 │   ├── publish.js                # POST — routes to GitHub API or Twitter API (✅ built)
 │   ├── schedule.js               # POST — saves content with scheduled_at to Redis (✅ built)
 │   ├── queue.js                  # GET/PATCH/DELETE — Redis queue operations (✅ built)
+│   ├── _lib/
+│   │   ├── insightBundleHelper.js # Unifies Blog, Ad, and LP generation for the Trend Hub (✅ built)
+│   │   └── conditionTemplate.js  # HTML schema compiler for Funnel logic (✅ built)
 │   ├── cron-publish.js           # Vercel Cron — publishes scheduled items every 5 min (✅ built)
-│   ├── cron-seo-queue.js         # Vercel Cron — weekly SEO keyword scan + generation (Phase 2)
-│   ├── cron-daily-tweet.js       # Vercel Cron — daily automated X post from condition pages (Phase 2)
-│   ├── cron-spike-detect.js      # Vercel Cron — daily reactive spike detection (Phase 2)
-│   └── social-trending.js        # GET — reads ARRCC Redis, returns top social topics (Phase 3)
+│   ├── cron-seo-queue.js         # Vercel Cron — weekly SEO keyword scan + generation (✅ built)
+│   ├── cron-daily-tweet.js       # Vercel Cron — daily automated X post from condition pages (✅ built)
+│   ├── cron-spike-detect.js      # Vercel Cron — daily reactive spike detection (✅ built)
+│   ├── cron-social-ads.js        # Vercel Cron — daily execution of ARRCC social triggers (✅ built)
+│   └── social-trending.js        # GET — reads ARRCC Redis, returns top social topics (✅ built)
 ├── src/
 │   ├── main.jsx
 │   ├── App.jsx                   # Root — 5 tabs, routing, state (✅ built)
