@@ -7,6 +7,7 @@ import PublishedTab from './components/PublishedTab.jsx';
 
 const TABS = [
   { id: 'generate',   label: 'Generate' },
+  { id: 'insights',   label: 'Trend Hub' },
   { id: 'review',     label: 'Review Queue' },
   { id: 'auto',       label: 'Auto Queue' },
   { id: 'scheduled',  label: 'Scheduled' },
@@ -17,8 +18,9 @@ const AUTO_SOURCES = ['seo_queue', 'spike', 'daily_tweet', 'social_ads'];
 
 function TabCount({ items, tabId }) {
   const count = {
-    review:    items.filter((i) => !AUTO_SOURCES.includes(i.source) && (i.status === 'review' || i.status === 'approved')).length,
-    auto:      items.filter((i) => AUTO_SOURCES.includes(i.source) && (i.status === 'review' || i.status === 'approved')).length,
+    insights:  items.filter((i) => i.content_type === 'insight_bundle' && (i.status === 'review' || i.status === 'approved')).length,
+    review:    items.filter((i) => i.content_type !== 'insight_bundle' && !AUTO_SOURCES.includes(i.source) && (i.status === 'review' || i.status === 'approved')).length,
+    auto:      items.filter((i) => i.content_type !== 'insight_bundle' && AUTO_SOURCES.includes(i.source) && (i.status === 'review' || i.status === 'approved')).length,
     scheduled: items.filter((i) => i.status === 'scheduled').length,
     published: items.filter((i) => i.status === 'published').length,
   }[tabId];
@@ -57,8 +59,11 @@ export default function App() {
 
   function handleGenerated(item) {
     upsertItem(item);
-    // Route to the correct queue tab based on source
-    setTab(AUTO_SOURCES.includes(item.source) ? 'auto' : 'review');
+    if (item.content_type === 'insight_bundle') {
+      setTab('insights');
+    } else {
+      setTab(AUTO_SOURCES.includes(item.source) ? 'auto' : 'review');
+    }
   }
 
   function handleUpdate(updated) {
@@ -135,9 +140,18 @@ export default function App() {
                 onDelete={removeItem}
               />
             )}
+            {tab === 'insights' && (
+              <AutoQueueTab
+                items={items.filter(i => i.content_type === 'insight_bundle')}
+                onUpdate={handleUpdate}
+                onPublish={handlePublish}
+                onSchedule={handleSchedule}
+                onDelete={removeItem}
+              />
+            )}
             {tab === 'auto' && (
               <AutoQueueTab
-                items={items}
+                items={items.filter(i => i.content_type !== 'insight_bundle')}
                 onUpdate={handleUpdate}
                 onPublish={handlePublish}
                 onSchedule={handleSchedule}

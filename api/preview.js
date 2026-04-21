@@ -38,7 +38,6 @@ function buildBlogPreview(item) {
     <span class="badge">PREVIEW</span>
     ${imgTag}
     <article>
-      <h1>${esc(c.title)}</h1>
       <p class="meta">${new Date(item.generated_at).toLocaleDateString('en-GB',{year:'numeric',month:'long',day:'numeric'})}</p>
       ${c.body_html || '<p>No content yet.</p>'}
     </article>
@@ -53,25 +52,39 @@ export default async function handler(req, res) {
   const { id } = req.query;
   if (!id) return res.status(400).json({ error: 'Missing id' });
 
-  const raw = await redis.get(`content:${id}`);
-  if (!raw) return res.status(404).json({ error: 'Item not found' });
-  const item = typeof raw === 'string' ? JSON.parse(raw) : raw;
-
-  if (!['landing_page', 'blog', 'insight', 'campaign_landing_page'].includes(item.content_type)) {
-    return res.status(400).json({ error: 'Preview not available for this content type' });
-  }
-
   try {
-    let html;
-    if (item.content_type === 'landing_page' || item.content_type === 'campaign_landing_page') {
-      html = item.content_type === 'landing_page' ? await buildConditionPage(item) : await buildCampaignLandingPageHtml(item);
+    const raw = await redis.get(`content:${id}`);
+    if (!raw) return res.status(404).send('Not found');
+    const item = JSON.parse(raw);
+
+    let html = '';
+    const view = req.query.view; // e.g. 'blog' or 'landing_page'
+
+    if (item.content_type === 'insight_bundle' || item.content_type === 'social_campaign') {
+      if (view === 'landing_page') {
+        const lpItem = { ...item, content: item.content.landing_page };
+        html = await buildCampaignLandingPageHtml(lpItem);
+      } else {
+        // default to blog view
+        const blogItem = { ...item, content: item.content.blog };
+        html = buildBlogPreview(blogItem);
+      }
+    } else if (item.content_type === 'landing_page') {
+      html = await buildConditionPage(item);
+    } else if (item.content_type === 'campaign_landing_page') {
+      html = await buildCampaignLandingPageHtml(item);
+    } else if (item.content_type === 'blog' || item.content_type === 'insight') {
+      html = buildBlogPreview(item);
+    } else {
+      html = '<p>Preview unavailable for this type.</p>';
+    }
+
+    if (item.content_type === 'landing_page' || item.content_type === 'campaign_landing_page' || (item.content_type === 'insight_bundle' && view === 'landing_page')) {
       // Inject base href so relative CSS/images load from the live site
       html = html.replace('<head>', '<head>\n<base href="https://dantelabs.com/" />');
       // Inject preview banner into the HTML
       html = html.replace('<body', `<body data-preview="true"`);
       html = html.replace(/<body[^>]*>/, (match) => `${match}\n<div style="position:fixed;top:0;left:0;right:0;background:#593159;color:#fff;text-align:center;font-size:12px;padding:6px;z-index:9999;font-family:system-ui">CONTENT FACTORY PREVIEW — NOT PUBLISHED</div><div style="height:30px"></div>`);
-    } else {
-      html = buildBlogPreview(item);
     }
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');

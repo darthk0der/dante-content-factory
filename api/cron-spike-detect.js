@@ -2,6 +2,7 @@ import { redis } from './_lib/redis.js';
 import { getExistingSlugs } from './_lib/github.js';
 import { loadSkill } from './_lib/skills.js';
 import { getVolumeHistory } from './_lib/ahrefs.js';
+import { generateInsightBundle } from './_lib/insightBundleHelper.js';
 
 const BRAND_VOICE_SKILL = 'Documentation/02_Brand/Brand_Voice_SKILL.md';
 
@@ -62,89 +63,7 @@ Otherwise return: {"is_spike": false}`;
     }
 }
 
-async function generateReactivePage(topic, triggerSource, brandVoice) {
-    const slug = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    
-    const systemPrompt = `Generate a fast-reacting, campaign-style insight page about: ${topic}.
-Target audience: Consumers seeing this news/trend.
-Length: 400-800 words. Focus on how Dante Labs' Whole Genome Sequencing relates to this securely and medically.
-Return ONLY valid JSON:
-{
-  "title": "...",
-  "slug": "${slug}",
-  "meta_description": "...",
-  "body_html": "<article HTML>",
-  "image_prompt": "Editorial lifestyle photo...",
-  "flags": []
-}`;
-
-    const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-            'x-api-key': process.env.ANTHROPIC_API_KEY,
-            'anthropic-version': '2023-06-01',
-            'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-            model: 'claude-sonnet-4-6',
-            max_tokens: 3000,
-            system: systemPrompt,
-            messages: [{ role: 'user', content: `News/Trend Trigger: ${triggerSource}. Create insight page for ${topic}` }],
-        }),
-    });
-
-    const data = await anthropicRes.json();
-    const fullText = data.content?.[0]?.text || '';
-    const codeBlockMatch = fullText.match(/```(?:json)?\s*([\s\S]*?)```/i);
-    const raw = codeBlockMatch ? codeBlockMatch[1] : fullText;
-    
-    let parsed;
-    try { parsed = JSON.parse(raw); } catch { parsed = { title: topic, slug, body_html: raw }; }
-
-    const id = `content-${Date.now()}`;
-    const item = {
-        id,
-        content_type: 'insight', // Special content type handled by modified publish routes
-        source: 'spike',
-        topic: parsed.title || topic,
-        slug: parsed.slug || slug,
-        generated_at: new Date().toISOString(),
-        status: 'review',
-        published_at: null,
-        scheduled_at: null,
-        trigger: triggerSource,
-        content: { ...parsed },
-        image_prompt: parsed.image_prompt || '',
-        image_url: null,
-        flags: parsed.flags || [],
-        qa_status: parsed.qa_status || 'REQUIRES_REVISION',
-    };
-
-    delete item.content.flags;
-    delete item.content.qa_status;
-    delete item.content.image_prompt;
-
-    // Optional Fal Generation
-    if (process.env.FAL_API_KEY && item.image_prompt) {
-        try {
-            const falRes = await fetch(`https://fal.run/fal-ai/flux-pro`, {
-                method: 'POST',
-                headers: { Authorization: `Key ${process.env.FAL_API_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: item.image_prompt, image_size: 'landscape_16_9', num_images: 1 }),
-            });
-            if (falRes.ok) {
-                const falData = await falRes.json();
-                item.image_url = falData?.images?.[0]?.url || falData?.image?.url || null;
-            }
-        } catch (e) {}
-    }
-
-    await redis.set(`content:${id}`, JSON.stringify(item));
-    await redis.lpush('content:index', id);
-    await redis.set(`spike:published:${slug}`, 'true');
-
-    return item;
-}
+// Handled by insightBundleHelper
 
 export default async function handler(req, res) {
     if (req.method !== 'GET' && req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -176,7 +95,7 @@ export default async function handler(req, res) {
                         
                         if (!alreadyExists && !conditionDirs.includes(slug) && !blogDirs.includes(slug)) {
                             // Valid spike
-                            await generateReactivePage(kw, `Ahrefs spike: ${kw} ${currentVol} vol`, brandVoice);
+                            await generateInsightBundle(kw, `Ahrefs spike: ${kw} ${currentVol} vol`, 'spike', brandVoice);
                             spikesDetected.push(kw);
                             generatedCount++;
                         }
@@ -199,7 +118,7 @@ export default async function handler(req, res) {
                     const slug = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-');
                     const alreadyExists = await redis.get(`spike:published:${slug}`);
                     if (!alreadyExists) {
-                        await generateReactivePage(topic, `News Trending: ${topic}`, brandVoice);
+                        await generateInsightBundle(topic, `News Trending: ${topic}`, 'spike', brandVoice);
                         spikesDetected.push(topic);
                         generatedCount++;
                     }
@@ -215,7 +134,7 @@ export default async function handler(req, res) {
                            const slug = rising.query.replace(/[^a-z0-9]+/g, '-');
                            const alreadyExists = await redis.get(`spike:published:${slug}`);
                            if (!alreadyExists) {
-                               await generateReactivePage(rising.query, `Google Trends breakout: ${rising.query} (+${rising.extracted_value}%)`, brandVoice);
+                               await generateInsightBundle(rising.query, `Google Trends breakout: ${rising.query} (+${rising.extracted_value}%)`, 'spike', brandVoice);
                                spikesDetected.push(rising.query);
                                generatedCount++;
                                break;

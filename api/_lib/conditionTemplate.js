@@ -124,32 +124,32 @@ export async function buildCampaignLandingPageHtml(item) {
   // ── Hero CTAs ─────────────────────────────────────────────────────────────
   const promoCode = c.promo_code || '';
   const offerLabel = c.offer_label || 'Special Offer';
-  const heroCtaHtml = \`<div class="cta-group hero-entrance" style="--entrance-order: 1; margin-top: 40px;">
+  const heroCtaHtml = `<div class="cta-group hero-entrance" style="--entrance-order: 1; margin-top: 40px;">
   <a href="#what-you-receive" class="btn btn-hero" id="hero-cta-primary">
     See what's included
   </a>
-  <a href="/genome/?promo=\${promoCode}" class="btn btn-primary" id="hero-cta-secondary">
-    Get your Genome (\${offerLabel})
+  <a href="/genome/?promo=${promoCode}" class="btn btn-primary" id="hero-cta-secondary">
+    Get your Genome (${offerLabel})
   </a>
-</div>\`;
-  html = html.replace(/<div class="cta-group[^>]*>[\\s\\S]*?(?=<\\/div>)<\\/div>/i, heroCtaHtml);
+</div>`;
+  html = html.replace(/<div class="cta-group[^>]*>[\s\S]*?(?=<\/div>)<\/div>/i, heroCtaHtml);
 
   // ── Final CTA Block ───────────────────────────────────────────────────────
-  const wgsCtaHtml = \`<a href="/genome/?promo=\${promoCode}" class="btn btn-primary" id="wgs-cta-block-primary"
+  const wgsCtaHtml = `<a href="/genome/?promo=${promoCode}" class="btn btn-primary" id="wgs-cta-block-primary"
   style="font-size: 15px; padding: 15px 28px;">
-  Order your Genome — \${offerLabel}
+  Order your Genome — ${offerLabel}
 </a>
-<p class="cta-mobile-micro">Use code <strong>\${promoCode}</strong> at checkout · Ships within 48 hours</p>\`;
-  html = html.replace(/<a href="\\/genome\\/[^"]*" class="btn btn-primary" id="wgs-cta-block-primary"[^>]*>[\\s\\S]*?<\\/a>\\s*(<p class="cta-mobile-micro">[\\s\\S]*?<\\/p>)?/i, wgsCtaHtml);
+<p class="cta-mobile-micro">Use code <strong>${promoCode}</strong> at checkout · Ships within 48 hours</p>`;
+  html = html.replace(/<a href="\/genome\/[^"]*" class="btn btn-primary" id="wgs-cta-block-primary"[^>]*>[\s\S]*?<\/a>\s*(<p class="cta-mobile-micro">[\s\S]*?<\/p>)?/i, wgsCtaHtml);
 
   // ── GA4 Tracking ──────────────────────────────────────────────────────────
-  const ga4Html = \`<script>
+  const ga4Html = `<script>
   (function () {
     var params = new URLSearchParams(window.location.search);
     var eventData = {
       source:   params.get('utm_source')   || 'direct',
       medium:   params.get('utm_medium')   || 'none',
-      campaign: params.get('utm_campaign') || '\${item.slug}',
+      campaign: params.get('utm_campaign') || '${item.slug}',
       content:  params.get('utm_content')  || ''
     };
     if (typeof gtag === 'function') {
@@ -157,8 +157,8 @@ export async function buildCampaignLandingPageHtml(item) {
     }
   })();
 </script>
-</body>\`;
-  html = html.replace(/<\\/body>/i, ga4Html);
+</body>`;
+  html = html.replace(/<\/body>/i, ga4Html);
 
   return html;
 }

@@ -240,6 +240,23 @@ export async function publishItem(item, redisClient) {
     const existing = await githubGetFile(path);
     await githubPutFile(path, html, `content: add campaign funnel — ${item.topic}`, existing?.sha);
     result = { live_url: `https://dantelabs.com/${item.slug}/` };
+
+  } else if (item.content_type === 'insight_bundle') {
+    // 1. Publish Blog
+    const blogItem = { ...item, content: item.content.blog };
+    const blogHtml = buildBlogHtml(blogItem);
+    const blogPath = `public/insights/${item.slug}/index.html`;
+    const existingBlog = await githubGetFile(blogPath);
+    await githubPutFile(blogPath, blogHtml, `content: add bundle insight — ${item.topic}`, existingBlog?.sha);
+
+    // 2. Publish Landing Page
+    const lpItem = { ...item, content: item.content.landing_page };
+    const lpHtml = await buildCampaignLandingPageHtml(lpItem);
+    const lpPath = `public/${item.slug}-campaign/index.html`;
+    const existingLp = await githubGetFile(lpPath);
+    await githubPutFile(lpPath, lpHtml, `content: add bundle campaign — ${item.topic}`, existingLp?.sha);
+
+    result = { live_url: `https://dantelabs.com/${item.slug}-campaign/` };
   }
 
   item.status       = 'published';

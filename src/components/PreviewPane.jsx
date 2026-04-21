@@ -1,14 +1,44 @@
 import { useState, useEffect, useRef } from 'react';
 
 export default function PreviewPane({ item }) {
+  if (item.content_type === 'insight_bundle') return <InsightBundlePreview item={item} />;
   const needsIframe = item.content_type === 'landing_page' || item.content_type === 'blog' || item.content_type === 'insight' || item.content_type === 'campaign_landing_page';
   if (needsIframe) return <IframePreview item={item} />;
   return <TextPreview item={item} />;
 }
 
+function InsightBundlePreview({ item }) {
+  const metaAdsItem = { ...item, content: { platform: 'meta', variants: item.content.meta_ads?.variants || [] }, content_type: 'ad_copy', image_url: item.image_url };
+  const googleAdsItem = { ...item, content: { platform: 'google', variants: item.content.google_ads?.variants || [] }, content_type: 'ad_copy', image_url: null };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
+      <div style={{ padding: '16px', background: '#e0f2fe', color: '#0369a1', fontWeight: 500, fontSize: '14px', borderBottom: '1px solid #bae6fd' }}>
+        <strong>Signal Context:</strong> Surfaced from {item.trigger}
+      </div>
+      <div>
+        <h3 style={{ padding: '24px 24px 0', margin: 0, fontSize: '18px' }}>Google Search Ads</h3>
+        <div style={{ padding: '0 24px' }}><AdCopyPreview item={googleAdsItem} /></div>
+      </div>
+      <div>
+        <h3 style={{ padding: '24px 24px 0', margin: 0, fontSize: '18px' }}>Meta Social Ads</h3>
+        <div style={{ padding: '0 24px' }}><AdCopyPreview item={metaAdsItem} /></div>
+      </div>
+      <div style={{ height: '800px', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
+        <h3 style={{ padding: '24px 24px 12px', margin: 0, fontSize: '18px' }}>Insight Article</h3>
+        <IframePreview item={item} view="blog" /> 
+      </div>
+      <div style={{ height: '800px', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
+        <h3 style={{ padding: '24px 24px 12px', margin: 0, fontSize: '18px' }}>Campaign Landing Page</h3>
+        <IframePreview item={item} view="landing_page" /> 
+      </div>
+    </div>
+  );
+}
+
 // ── Iframe preview (landing page + blog) ──────────────────────────────────
 
-function IframePreview({ item }) {
+function IframePreview({ item, view = '' }) {
   const [blobUrl, setBlobUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -18,7 +48,7 @@ function IframePreview({ item }) {
     setLoading(true);
     setError(null);
 
-    fetch(`/api/preview?id=${encodeURIComponent(item.id)}`)
+    fetch(`/api/preview?id=${encodeURIComponent(item.id)}` + (view ? `&view=${view}` : ''))
       .then((r) => {
         if (!r.ok) return r.json().then((d) => { throw new Error(d.error || `Preview failed (${r.status})`); });
         return r.text();
