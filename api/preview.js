@@ -55,7 +55,7 @@ export default async function handler(req, res) {
   try {
     const raw = await redis.get(`content:${id}`);
     if (!raw) return res.status(404).send('Not found');
-    const item = JSON.parse(raw);
+    const item = typeof raw === 'string' ? JSON.parse(raw) : raw;
 
     let html = '';
     const view = req.query.view; // e.g. 'blog' or 'landing_page'
