@@ -122,6 +122,38 @@ function EmailFields({ c, setField }) {
   );
 }
 
+function SocialOrganicFields({ c, setField }) {
+  const soc = c.social_organic || {};
+
+  const getStr = (val) => {
+    if (!val) return '';
+    if (typeof val === 'string') return val;
+    return val.body ? `${val.title ? val.title + '\n\n' : ''}${val.body}` : JSON.stringify(val);
+  };
+
+  const update = (plat, v) => setField('content.social_organic', { ...soc, [plat]: v });
+
+  return (
+    <>
+      <FieldGroup title="Twitter / X">
+        <Field label="Tweet content" value={getStr(soc.twitter)} onChange={(v) => update('twitter', v)} rows={4} />
+      </FieldGroup>
+      <FieldGroup title="LinkedIn">
+        <Field label="Post content" value={getStr(soc.linkedin)} onChange={(v) => update('linkedin', v)} rows={6} />
+      </FieldGroup>
+      <FieldGroup title="Reddit">
+        <Field label="Post content" value={getStr(soc.reddit)} onChange={(v) => update('reddit', v)} rows={6} />
+      </FieldGroup>
+      <FieldGroup title="Facebook">
+        <Field label="Post content" value={getStr(soc.facebook)} onChange={(v) => update('facebook', v)} rows={6} />
+      </FieldGroup>
+      <FieldGroup title="Instagram">
+        <Field label="Caption" value={getStr(soc.instagram)} onChange={(v) => update('instagram', v)} rows={6} />
+      </FieldGroup>
+    </>
+  );
+}
+
 function AdCopyFields({ c, setField }) {
   const variants = c.variants || [];
   const isGoogle = c.platform !== 'meta';
@@ -476,6 +508,7 @@ export default function Editor({ item, onUpdate, onPublish, onSchedule, onDelete
           {(item.content_type === 'landing_page' || item.content_type === 'condition_page') && <LandingFields c={c} setField={setField} />}
           {item.content_type === 'email'        && <EmailFields c={c} setField={setField} />}
           {item.content_type === 'ad_copy'      && <AdCopyFields c={c} setField={setField} />}
+          {item.content_type === 'insight_bundle' && <SocialOrganicFields c={c} setField={setField} />}
 
           {/* Flags in edit mode too */}
           <div className="card">

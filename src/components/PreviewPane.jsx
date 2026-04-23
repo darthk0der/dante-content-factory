@@ -28,13 +28,7 @@ function InsightBundlePreview({ item }) {
         <div>
           <h3 style={{ padding: '24px 24px 12px', margin: 0, fontSize: '18px' }}>Organic Social</h3>
           <div style={{ padding: '0 24px' }}>
-            <div className="card" style={{ background: '#fafafa' }}>
-              <div style={{ marginBottom: '16px', whiteSpace: 'pre-wrap' }}><strong>Twitter:</strong> {typeof item.content.social_organic.twitter === 'object' ? JSON.stringify(item.content.social_organic.twitter) : item.content.social_organic.twitter}</div>
-              <div style={{ marginBottom: '16px', whiteSpace: 'pre-wrap' }}><strong>LinkedIn:</strong> {typeof item.content.social_organic.linkedin === 'object' ? JSON.stringify(item.content.social_organic.linkedin) : item.content.social_organic.linkedin}</div>
-              <div style={{ marginBottom: '16px', whiteSpace: 'pre-wrap' }}><strong>Reddit:</strong> {typeof item.content.social_organic.reddit === 'object' ? `${item.content.social_organic.reddit.title || ''}\n\n${item.content.social_organic.reddit.body || ''}` : item.content.social_organic.reddit}</div>
-              <div style={{ marginBottom: '16px', whiteSpace: 'pre-wrap' }}><strong>Facebook:</strong> {typeof item.content.social_organic.facebook === 'object' ? JSON.stringify(item.content.social_organic.facebook) : item.content.social_organic.facebook}</div>
-              <div style={{ whiteSpace: 'pre-wrap' }}><strong>Instagram:</strong> {typeof item.content.social_organic.instagram === 'object' ? JSON.stringify(item.content.social_organic.instagram) : item.content.social_organic.instagram}</div>
-            </div>
+            <SocialOrganicPreview item={item} />
           </div>
         </div>
       )}
@@ -348,6 +342,46 @@ function MetaAdVariant({ v, i, imageUrl }) {
           </span>
         ))}
       </div>
+    </div>
+  );
+}
+
+function SocialOrganicPreview({ item }) {
+  const social = item.content.social_organic || {};
+  const image = item.image_url;
+
+  const extractString = (val) => {
+    if (!val) return '';
+    if (typeof val === 'string') return val;
+    return val.body ? `${val.title ? val.title + '\n\n' : ''}${val.body}` : JSON.stringify(val);
+  };
+
+  const platforms = [
+    { name: 'Twitter', icon: '🐦', content: extractString(social.twitter), withImage: true },
+    { name: 'LinkedIn', icon: '💼', content: extractString(social.linkedin), withImage: true },
+    { name: 'Reddit', icon: '🤖', content: extractString(social.reddit), withImage: false },
+    { name: 'Facebook', icon: '📘', content: extractString(social.facebook), withImage: true },
+    { name: 'Instagram', icon: '📸', content: extractString(social.instagram), withImage: true }
+  ];
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '20px' }}>
+      {platforms.map(p => p.content && (
+        <div key={p.name} style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', background: '#fff', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden', maxWidth: '500px' }}>
+          {/* Header */}
+          <div style={{ padding: '12px 14px', background: '#f8f9fa', borderBottom: '1px solid #f0f2f5', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, fontSize: '14px', color: '#1c1e21' }}>
+            <span>{p.icon}</span> {p.name}
+          </div>
+          {/* Text */}
+          <div style={{ padding: '14px', fontSize: '14px', color: '#1c1e21', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+            {p.content}
+          </div>
+          {/* Image */}
+          {p.withImage && image && (
+            <img src={image} alt="" style={{ width: '100%', maxHeight: '300px', objectFit: 'cover', display: 'block', borderTop: '1px solid #f0f2f5' }} />
+          )}
+        </div>
+      ))}
     </div>
   );
 }

@@ -43,18 +43,41 @@ export async function generateInsightBundle(topic, triggerSource, sourceCategory
   const blogSystem = `Generate a fast-reacting, campaign-style insight page about: ${topicFriendly}.
 Target audience: Consumers seeing this news/trend.
 Length: 400-800 words. Focus on how Dante Labs' Whole Genome Sequencing relates to this securely and medically.
+
+CRITICAL: Do NOT return the complex condition_insight schema. Return a simple JSON with a standard stringified 'body_html' property containing clean HTML tags.
+
 Return ONLY valid JSON:
 {
   "title": "...",
   "slug": "${slug}",
   "meta_description": "...",
   "body_html": "<article HTML without main H1 title tag>",
+  "hero_headline": "Short landing page H1 headline...",
+  "hero_subhead": "1-2 sentence landing page subhead...",
   "image_prompt": "Editorial lifestyle photo...",
   "flags": []
 }`;
-  let blogData = await callAnthropic(`${brandVoice}\n\nReturn ONLY valid JSON. No markdown code fences.`, `News/Trend Trigger: ${triggerSource}. Create insight page for ${topicFriendly}`);
+  let blogData = await callAnthropic(`${brandVoice}\n\n${blogSystem}\n\nReturn ONLY valid JSON. No markdown code fences.`, `News/Trend Trigger: ${triggerSource}. Create insight page for ${topicFriendly}`);
+  
   if (typeof blogData === 'string') {
     blogData = { title: topicFriendly, slug, body_html: blogData };
+  } else {
+    // Rescue raw condition_insight JSON if Claude hallucinates it into body_html
+    let bHtml = blogData.body_html;
+    if (typeof bHtml === 'string' && bHtml.trim().startsWith('```json')) bHtml = bHtml.replace(/```json/g, '').replace(/```/g, '').trim();
+    if (typeof bHtml === 'string' && bHtml.trim().startsWith('{')) {
+      try {
+        const parsed = JSON.parse(bHtml);
+        if (parsed.sections) bHtml = parsed;
+      } catch (e) {}
+    }
+    if (typeof bHtml === 'object') {
+      if (bHtml.sections) {
+        blogData.body_html = bHtml.sections.map(s => `<h2>${s.heading || s.section_label || ''}</h2>` + (s.body_paragraphs || []).map(p => `<p>${p}</p>`).join('')).join('');
+      } else {
+        blogData.body_html = JSON.stringify(bHtml);
+      }
+    }
   }
 
   // 2. Generate Meta Ads
@@ -149,7 +172,9 @@ Rules: No exclamation points. No diagnostic claims. No competitor mentions.`;
         seo_description: `Learn how whole genome sequencing can provide actionable health insights for ${topicFriendly}.`,
         canonical_url: `https://dantelabs.com/${slug}-campaign/`,
         promo_code: promoCode,
-        offer_label: '10% off'
+        offer_label: '10% off',
+        hero_headline: blogData.hero_headline || topicFriendly,
+        hero_subhead: blogData.hero_subhead || `Get a full genetic understanding of your health. Guide your prevention with precision regarding ${topicFriendly}.`
       },
       social_organic: socialData.twitter ? socialData : { twitter: '', linkedin: '', reddit: '', facebook: '', instagram: '' }
     },
