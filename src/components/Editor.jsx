@@ -179,6 +179,7 @@ export default function Editor({ item, onUpdate, onPublish, onSchedule, onDelete
   const [scheduledAt, setScheduledAt] = useState('');
   const [publishing, setPublishing] = useState(false);
   const [imageGenerating, setImageGenerating] = useState(false);
+  const [videoGenerating, setVideoGenerating] = useState(false);
   const [notification, setNotification] = useState(null);
 
   function notify(msg, type = 'success') {
@@ -275,6 +276,27 @@ export default function Editor({ item, onUpdate, onPublish, onSchedule, onDelete
     }
   }
 
+  async function handleGenerateVideo() {
+    if (!item.image_url) return;
+    setVideoGenerating(true);
+    notify('Generating video (takes ~30-60s)...', 'info');
+    try {
+      const r = await fetch('/api/generate-video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: item.id, image_url: item.image_url }),
+      });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || 'Video generation failed');
+      onUpdate({ ...item, video_url: data.video_url });
+      notify('Video generated successfully!');
+    } catch (e) {
+      notify(e.message, 'danger');
+    } finally {
+      setVideoGenerating(false);
+    }
+  }
+
   async function handleDelete() {
     if (!confirm('Remove this item from the queue?')) return;
     await fetch('/api/queue', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: item.id }) });
@@ -309,7 +331,7 @@ export default function Editor({ item, onUpdate, onPublish, onSchedule, onDelete
   }
 
   const c = item.content || {};
-  const showImage = ['twitter', 'blog', 'landing_page'].includes(item.content_type);
+  const showImage = ['twitter', 'blog', 'landing_page', 'condition_page'].includes(item.content_type);
 
   // ── Render ─────────────────────────────────────────────────────────────
 
@@ -404,10 +426,20 @@ export default function Editor({ item, onUpdate, onPublish, onSchedule, onDelete
               {item.image_url ? (
                 <div>
                   <img src={item.image_url} alt="" className="img-preview" />
-                  <button className="btn btn-sm btn-outline" style={{ width: '100%' }}
+                  <button className="btn btn-sm btn-outline" style={{ width: '100%', marginBottom: '8px' }}
                     onClick={handleGenerateImage} disabled={imageGenerating}>
                     Regenerate image
                   </button>
+                  {item.image_url && (
+                    <>
+                      <button className="btn btn-sm btn-accent" style={{ width: '100%' }} onClick={handleGenerateVideo} disabled={videoGenerating || item.video_url}>
+                        {videoGenerating ? 'Generating Video (Takes ~60s)...' : item.video_url ? 'Video generated' : 'Generate 6s Video (Kling AI)'}
+                      </button>
+                      {item.video_url && (
+                        <video src={item.video_url} controls loop autoPlay playsInline style={{ width: '100%', marginTop: '12px', borderRadius: '8px', border: '1px solid var(--border)' }} />
+                      )}
+                    </>
+                  )}
                 </div>
               ) : (
                 <div>
@@ -441,7 +473,7 @@ export default function Editor({ item, onUpdate, onPublish, onSchedule, onDelete
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {item.content_type === 'twitter'      && <TwitterFields c={c} setField={setField} />}
           {item.content_type === 'blog'         && <BlogFields c={c} setField={setField} />}
-          {item.content_type === 'landing_page' && <LandingFields c={c} setField={setField} />}
+          {(item.content_type === 'landing_page' || item.content_type === 'condition_page') && <LandingFields c={c} setField={setField} />}
           {item.content_type === 'email'        && <EmailFields c={c} setField={setField} />}
           {item.content_type === 'ad_copy'      && <AdCopyFields c={c} setField={setField} />}
 
@@ -458,10 +490,20 @@ export default function Editor({ item, onUpdate, onPublish, onSchedule, onDelete
               {item.image_url ? (
                 <>
                   <img src={item.image_url} alt="" className="img-preview" style={{ maxHeight: '200px' }} />
-                  <button className="btn btn-sm btn-outline" style={{ width: '100%' }}
+                  <button className="btn btn-sm btn-outline" style={{ width: '100%', marginBottom: '8px' }}
                     onClick={handleGenerateImage} disabled={imageGenerating}>
                     Regenerate image
                   </button>
+                  {item.image_url && (
+                    <>
+                      <button className="btn btn-sm btn-accent" style={{ width: '100%' }} onClick={handleGenerateVideo} disabled={videoGenerating || item.video_url}>
+                        {videoGenerating ? 'Generating Video...' : item.video_url ? 'Video generated' : 'Generate 6s Video'}
+                      </button>
+                      {item.video_url && (
+                        <video src={item.video_url} controls loop autoPlay playsInline style={{ width: '100%', marginTop: '12px', borderRadius: '8px', border: '1px solid var(--border)', maxHeight: '200px' }} />
+                      )}
+                    </>
+                  )}
                 </>
               ) : (
                 <>

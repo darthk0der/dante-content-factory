@@ -2,9 +2,11 @@ import { redis } from './_lib/redis.js';
 import { loadSkill } from './_lib/skills.js';
 
 const SKILL_MAP = {
-  twitter:      'Twitter_Post_SKILL.md',
-  blog:         'Blog_Post_SKILL.md',
-  landing_page: 'Landing_Page_Sections_SKILL.md',
+  twitter:        'Twitter_Post_SKILL.md',
+  blog:           'Blog_Post_SKILL.md',
+  landing_page:   'Landing_Page_Sections_SKILL.md',
+  condition_page: 'Condition_Page_SKILL.md',
+  email:          'Email_SKILL.md',
 };
 
 const BRAND_VOICE_SKILL = 'Documentation/02_Brand/Brand_Voice_SKILL.md';
@@ -21,35 +23,45 @@ function slugify(str) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
+const PHOTO_PROMPT = "The image_prompt field MUST describe a highly cinematic, photorealistic 8k raw photo, shot on Sony A7R IV, natural light. It should be a real lifestyle scene (e.g. a family, a patient, a doctor). NEVER depict hands in isolation. NEVER depict laboratory equipment or test tubes. Must look like high-end editorial photography.";
+
 // ── Prompt builders ────────────────────────────────────────────────────────
 
 function buildUserPrompt(body) {
-  const { content_type, topic, format, email_type, ad_platform, campaign_objective, product, target_audience } = body;
+  const { content_type, topic, format, email_type, ad_platform, campaign_objective, product, target_audience, blog_type } = body;
 
   if (content_type === 'twitter') {
     return `Generate a Twitter/X post for Dante Labs about: ${topic}
 Format: ${format || 'educational'}
 
-The image_prompt field MUST describe a lifestyle scene — a real person living with or managing the condition, or a family receiving results together. Use natural, warm settings (clinic, home, outdoors). NEVER depict hands in isolation. NEVER depict laboratory equipment or test tubes. Think: editorial photography style, like what you'd see in a health magazine.`;
+${PHOTO_PROMPT}`;
   }
 
   if (content_type === 'blog') {
     return `Generate a blog post for Dante Labs about: ${topic}
+Type of post: ${blog_type || 'Educational'}
 
 Important: The hero_image_alt field must be a descriptive alt text for the hero image (e.g. "A family discussing genetic health results with a doctor"). Do not leave it empty.
-The image_prompt field must describe a lifestyle editorial photo — real people, warm setting, NOT hands, NOT lab equipment.`;
+${PHOTO_PROMPT}`;
   }
 
   if (content_type === 'landing_page') {
-    return `Generate a condition landing page for Dante Labs for: ${topic}
+    return `Generate a promotional conversion landing page for Dante Labs for: ${topic}
 
-The image_prompt field must describe a lifestyle editorial photo relevant to this condition — real people, warm/clinical setting, NOT hands in isolation, NOT lab equipment.`;
+${PHOTO_PROMPT}`;
+  }
+
+  if (content_type === 'condition_page') {
+    return `Generate a comprehensive medical condition page for Dante Labs for: ${topic}
+
+${PHOTO_PROMPT}`;
   }
 
   if (content_type === 'email') {
-    const typeLabel = { newsletter: 'Newsletter', product_launch: 'Product Launch', re_engagement: 'Re-engagement' }[email_type] || email_type;
+    const typeLabel = { newsletter: 'Newsletter', product_launch: 'Product Launch', re_engagement: 'Re-engagement', transactional: 'Transactional', informational: 'Informational' }[email_type] || email_type;
     return `Generate a Dante Labs ${typeLabel} email campaign.
 Key message: ${topic}
+${email_type === 'transactional' ? 'CRITICAL: This is a transactional/promotional email. It MUST be extremely short, punchy, and direct (max 2 short paragraphs).' : ''}
 
 Return ONLY a valid JSON object — no markdown, no code fences, no explanation. Use this exact schema:
 {
@@ -107,7 +119,7 @@ Use this exact schema:
 
 Rules: No exclamation points. No diagnostic claims. No competitor mentions. Each variant must have a clearly different angle.
 
-Also include a top-level "image_prompt" field describing the ideal ad image: a lifestyle editorial photo of a real person or family relevant to the campaign objective. Warm, natural setting. No hands in isolation, no lab equipment, no text overlays.`;
+Also include a top-level "image_prompt" field describing the ideal ad image: ${product === 'WGS' ? 'A photorealistic lifestyle photo of a person holding or looking at the physical Dante Labs WGS testing kit box in a nice home setting.' : 'A lifestyle editorial photo of a real person or family relevant to the campaign objective.'} ${PHOTO_PROMPT}`;
     }
 
     // Google ads
@@ -240,7 +252,7 @@ export default async function handler(req, res) {
   const { content_type, topic, format, email_type, ad_platform, campaign_objective, product, target_audience, source } = req.body;
   if (!content_type || !topic) return res.status(400).json({ error: 'Missing content_type or topic' });
 
-  const validTypes = ['landing_page', 'blog', 'twitter', 'email', 'ad_copy'];
+  const validTypes = ['landing_page', 'condition_page', 'blog', 'twitter', 'email', 'ad_copy'];
   if (!validTypes.includes(content_type)) return res.status(400).json({ error: `Unknown content_type: ${content_type}` });
 
   // Load skill(s)
@@ -258,6 +270,17 @@ export default async function handler(req, res) {
   } catch (e) {
     console.warn('Skill load failed, using fallback:', e.message);
     systemPrompt = `You are a content writer for Dante Labs, a clinical whole genome sequencing company. Generate high-quality, accurate content. Return valid JSON only. No exclamation points. No diagnostic claims.`;
+  }
+
+  // Inject learned feedback rules into the prompt
+  try {
+    const { redis } = await import('./_lib/redis.js');
+    const rulesList = await redis.lrange('content:global_rules', 0, -1);
+    if (rulesList && rulesList.length > 0) {
+      systemPrompt += `\n\n--- HUMAN FEEDBACK RULES ---\n*CRITICAL INSTRUCTIONS LEARNED FROM PAST HUMAN EDITS*:\n` + rulesList.map((r, i) => `${i+1}. ${r}`).join('\n');
+    }
+  } catch(e) {
+    // fail silently if redis fails
   }
 
   const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {

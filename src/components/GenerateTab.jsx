@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CONTENT_TYPE_LABELS, TWITTER_FORMATS, EMAIL_TYPES, AD_PLATFORMS, AD_PRODUCTS } from '../lib/skills.js';
+import { CONTENT_TYPE_LABELS, TWITTER_FORMATS, EMAIL_TYPES, AD_PLATFORMS, AD_PRODUCTS, BLOG_TYPES } from '../lib/skills.js';
 
 export default function GenerateTab({ onGenerated }) {
   const [contentType, setContentType] = useState('landing_page');
@@ -9,6 +9,9 @@ export default function GenerateTab({ onGenerated }) {
 
   // Twitter
   const [format, setFormat] = useState('educational');
+
+  // Blog
+  const [blogType, setBlogType] = useState('educational');
 
   // Email
   const [emailType, setEmailType] = useState('newsletter');
@@ -47,7 +50,10 @@ export default function GenerateTab({ onGenerated }) {
       generate({ content_type: 'landing_page', topic: topic.trim() });
     } else if (contentType === 'blog') {
       if (!topic.trim()) { alert('Please enter a topic.'); return; }
-      generate({ content_type: 'blog', topic: topic.trim() });
+      generate({ content_type: 'blog', topic: topic.trim(), blog_type: blogType });
+    } else if (contentType === 'condition_page') {
+      if (!topic.trim()) { alert('Please enter a condition.'); return; }
+      generate({ content_type: 'condition_page', topic: topic.trim() });
     } else if (contentType === 'twitter') {
       if (!topic.trim()) { alert('Please enter a topic.'); return; }
       generate({ content_type: 'twitter', topic: topic.trim(), format });
@@ -99,15 +105,45 @@ export default function GenerateTab({ onGenerated }) {
           </div>
         )}
 
-        {/* ── Blog ── */}
-        {contentType === 'blog' && (
+        {/* ── Condition Page ── */}
+        {contentType === 'condition_page' && (
           <div style={{ marginBottom: '16px' }}>
-            <label className="field-label">Topic</label>
+            <label className="field-label">Condition</label>
             <input className="field-input" style={{ maxWidth: '480px' }}
-              placeholder="e.g. What hereditary cancer risk really means for families"
+              placeholder="e.g. Ehlers-Danlos Syndrome"
               value={topic} onChange={(e) => setTopic(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
             />
+          </div>
+        )}
+
+        {/* ── Blog ── */}
+        {contentType === 'blog' && (
+          <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div>
+              <label className="field-label">Post Type</label>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {BLOG_TYPES.map((t) => (
+                  <button key={t.value} onClick={() => setBlogType(t.value)} className="btn btn-sm"
+                    style={{
+                      background: blogType === t.value ? 'var(--ink)' : 'transparent',
+                      color: blogType === t.value ? '#fff' : 'var(--text)',
+                      border: `1px solid ${blogType === t.value ? 'var(--ink)' : 'var(--border)'}`,
+                    }}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="field-label">Topic / Story Focus</label>
+              <input className="field-input" style={{ maxWidth: '480px' }}
+                placeholder="e.g. What hereditary cancer risk really means for families"
+                value={topic} onChange={(e) => setTopic(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
+              />
+            </div>
           </div>
         )}
 

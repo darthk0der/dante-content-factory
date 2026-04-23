@@ -9,6 +9,7 @@ export const SKILL_FILES = {
 
 export const CONTENT_TYPE_LABELS = {
   landing_page: 'Landing Page',
+  condition_page: 'Condition Page',
   blog: 'Blog Post',
   twitter: 'Twitter/X Post',
   email: 'Email Campaign',
@@ -23,8 +24,17 @@ export const TWITTER_FORMATS = [
 
 export const EMAIL_TYPES = [
   { value: 'newsletter',      label: 'Newsletter' },
+  { value: 'informational',   label: 'Informational' },
+  { value: 'transactional',   label: 'Transactional' },
   { value: 'product_launch',  label: 'Product Launch' },
   { value: 're_engagement',   label: 'Re-engagement' },
+];
+
+export const BLOG_TYPES = [
+  { value: 'educational',     label: 'Educational' },
+  { value: 'patient_story',   label: 'Patient Story' },
+  { value: 'science_tech',    label: 'Science/Tech Breakdown' },
+  { value: 'company_update',  label: 'Company Update' },
 ];
 
 export const AD_PLATFORMS = [

@@ -95,8 +95,21 @@ Return ONLY a valid JSON object matching:
 Rules: strict char limits.`;
   const googleAdData = await callAnthropic(`${brandVoice}\n\nReturn ONLY valid JSON.`, googleUser);
 
+  // 4. Generate Organic Social
+  const socialUser = `Generate an organic social media bundle for Dante Labs discussing the trend: ${topicFriendly}.
+Return ONLY a valid JSON object matching:
+{
+  "twitter": "Educational concise tweet (max 280 chars)",
+  "linkedin": "Professional post aimed at adults concerned about hereditary risk.",
+  "reddit": "Title and body for r/genetics or r/health. Must be conversational, educational, not a hard sell.",
+  "facebook": "Engaging, conversational post for families.",
+  "instagram": "Caption for the generated image, including 3-5 relevant exact hashtags."
+}
+Rules: No exclamation points. No diagnostic claims. No competitor mentions.`;
+  const socialData = await callAnthropic(`${brandVoice}\n\nReturn ONLY valid JSON.`, socialUser);
+
   let imageUrl = null;
-  const targetPrompt = metaAdData.image_prompt || blogData.image_prompt;
+  const targetPrompt = "A highly cinematic, photorealistic 8k raw photo, shot on Sony A7R IV, natural light. It should be a real lifestyle scene (e.g. a family, a patient). NEVER depict hands in isolation. NEVER depict laboratory equipment. " + (metaAdData.image_prompt || blogData.image_prompt);
   if (process.env.FAL_API_KEY && targetPrompt) {
     try {
       const falRes = await fetch(`https://fal.run/fal-ai/flux/schnell`, {
@@ -137,7 +150,8 @@ Rules: strict char limits.`;
         canonical_url: `https://dantelabs.com/${slug}-campaign/`,
         promo_code: promoCode,
         offer_label: '10% off'
-      }
+      },
+      social_organic: socialData.twitter ? socialData : { twitter: '', linkedin: '', reddit: '', facebook: '', instagram: '' }
     },
     flags: blogData.flags || [],
     qa_status: 'READY_FOR_REVIEW'

@@ -24,6 +24,20 @@ function InsightBundlePreview({ item }) {
         <h3 style={{ padding: '24px 24px 0', margin: 0, fontSize: '18px' }}>Meta Social Ads</h3>
         <div style={{ padding: '0 24px' }}><AdCopyPreview item={metaAdsItem} /></div>
       </div>
+      {item.content.social_organic && (
+        <div>
+          <h3 style={{ padding: '24px 24px 12px', margin: 0, fontSize: '18px' }}>Organic Social</h3>
+          <div style={{ padding: '0 24px' }}>
+            <div className="card" style={{ background: '#fafafa' }}>
+              <div style={{ marginBottom: '16px' }}><strong>Twitter:</strong> {item.content.social_organic.twitter}</div>
+              <div style={{ marginBottom: '16px' }}><strong>LinkedIn:</strong> {item.content.social_organic.linkedin}</div>
+              <div style={{ marginBottom: '16px' }}><strong>Reddit:</strong> {item.content.social_organic.reddit}</div>
+              <div style={{ marginBottom: '16px' }}><strong>Facebook:</strong> {item.content.social_organic.facebook}</div>
+              <div><strong>Instagram:</strong> {item.content.social_organic.instagram}</div>
+            </div>
+          </div>
+        </div>
+      )}
       <div style={{ height: '800px', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
         <h3 style={{ padding: '24px 24px 12px', margin: 0, fontSize: '18px' }}>Insight Article</h3>
         <IframePreview item={item} view="blog" /> 
@@ -274,6 +288,8 @@ function GoogleAdVariant({ v, i }) {
 function MetaAdVariant({ v, i, imageUrl }) {
   const BADGE_COLORS = ['#dbeafe', '#dcfce7', '#f3e8ff'];
   const BADGE_TEXT   = ['#1e40af', '#166534', '#6b21a8'];
+  const [showOverlay, setShowOverlay] = useState(false);
+
   return (
     <div style={{ border: '1px solid var(--border)', borderRadius: '8px', padding: '16px', marginBottom: '14px', background: '#fafafa' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
@@ -289,9 +305,26 @@ function MetaAdVariant({ v, i, imageUrl }) {
         </div>
         {/* Image */}
         {imageUrl
-          ? <img src={imageUrl} alt="" style={{ width: '100%', height: '220px', objectFit: 'cover', display: 'block' }} />
+          ? <div style={{ position: 'relative' }}>
+              <img src={imageUrl} alt="" style={{ width: '100%', height: '220px', objectFit: 'cover', display: 'block' }} />
+              {showOverlay && (
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+                  <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: 800, textAlign: 'center', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
+                    {v.headline}
+                  </h2>
+                </div>
+              )}
+            </div>
           : <div style={{ background: 'linear-gradient(135deg, #e8e8e8, #d0d0d0)', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: '12px' }}>Generating image…</div>
         }
+        {imageUrl && (
+          <div style={{ padding: '8px 14px', borderBottom: '1px solid #f0f2f5', background: '#f8f9fa' }}>
+            <label style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+              <input type="checkbox" checked={showOverlay} onChange={(e) => setShowOverlay(e.target.checked)} />
+              Show dynamically generated text overlay
+            </label>
+          </div>
+        )}
         {/* Below-image block */}
         <div style={{ padding: '10px 14px', background: '#f0f2f5', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
           <div>
