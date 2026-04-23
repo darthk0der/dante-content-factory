@@ -252,7 +252,7 @@ export default async function handler(req, res) {
   const { content_type, topic, format, email_type, ad_platform, campaign_objective, product, target_audience, source } = req.body;
   if (!content_type || !topic) return res.status(400).json({ error: 'Missing content_type or topic' });
 
-  const validTypes = ['landing_page', 'condition_page', 'blog', 'twitter', 'email', 'ad_copy'];
+  const validTypes = ['landing_page', 'condition_page', 'blog', 'twitter', 'email', 'ad_copy', 'insight_bundle'];
   if (!validTypes.includes(content_type)) return res.status(400).json({ error: `Unknown content_type: ${content_type}` });
 
   // Load skill(s)
@@ -281,6 +281,18 @@ export default async function handler(req, res) {
     }
   } catch(e) {
     // fail silently if redis fails
+  }
+
+  // Handle Insight Bundle routing
+  if (content_type === 'insight_bundle') {
+    const { generateInsightBundle } = await import('./_lib/insightBundleHelper.js');
+    const brandVoiceOnly = systemPrompt; // The full system prompt with learned rules
+    try {
+      const item = await generateInsightBundle(topic, 'manual_ui_trigger', 'spike', brandVoiceOnly);
+      return res.status(200).json({ item });
+    } catch (e) {
+      return res.status(500).json({ error: e.message });
+    }
   }
 
   const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {

@@ -16,6 +16,16 @@ export const CONTENT_TYPE_LABELS = {
   ad_copy: 'Ad Copy',
 };
 
+export const CONTENT_TYPES = [
+  { id: 'landing_page', label: 'Landing Page' },
+  { id: 'condition_page', label: 'Condition Page' },
+  { id: 'blog', label: 'Blog Post' },
+  { id: 'twitter', label: 'Twitter/X Post' },
+  { id: 'email', label: 'Email Campaign' },
+  { id: 'ad_copy', label: 'Ad Copy' },
+  { id: 'insight_bundle', label: 'Trend Insight Bundle (8-piece)' },
+];
+
 export const TWITTER_FORMATS = [
   { value: 'educational', label: 'Educational' },
   { value: 'story_led',   label: 'Story-Led' },
