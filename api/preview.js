@@ -13,6 +13,20 @@ function buildBlogPreview(item) {
     ? `<img src="${item.image_url}" alt="${esc(c.hero_image_alt || c.title)}" style="width:100%;height:320px;object-fit:cover;border-radius:8px;margin-bottom:32px"/>`
     : '';
 
+  let finalBodyHtml = c.body_html || '<p>No content yet.</p>';
+  try {
+    let bHtml = finalBodyHtml;
+    if (bHtml.trim().startsWith('```json')) bHtml = bHtml.replace(/```json/g, '').replace(/```/g, '').trim();
+    if (bHtml.trim().startsWith('{')) {
+      const parsed = JSON.parse(bHtml);
+      if (parsed.sections) {
+        finalBodyHtml = parsed.sections.map(s => `<h2>${s.heading || s.section_label || ''}</h2>` + (s.body_paragraphs || []).map(p => `<p>${p}</p>`).join('')).join('');
+      } else {
+         finalBodyHtml = JSON.stringify(parsed, null, 2).replace(/\n/g, '<br/>');
+      }
+    }
+  } catch (e) {}
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,7 +53,7 @@ function buildBlogPreview(item) {
     ${imgTag}
     <article>
       <p class="meta">${new Date(item.generated_at).toLocaleDateString('en-GB',{year:'numeric',month:'long',day:'numeric'})}</p>
-      ${c.body_html || '<p>No content yet.</p>'}
+      ${finalBodyHtml}
     </article>
   </main>
 </body>
@@ -62,7 +76,9 @@ export default async function handler(req, res) {
 
     if (item.content_type === 'insight_bundle' || item.content_type === 'social_campaign') {
       if (view === 'landing_page') {
-        const lpItem = { ...item, content: item.content.landing_page };
+        const lpItem = { ...item, content: { ...item.content.landing_page } };
+        if (!lpItem.content.hero_headline) lpItem.content.hero_headline = item.topic.replace(/^Trend Hub: /, '');
+        if (!lpItem.content.hero_subhead) lpItem.content.hero_subhead = `Get a full genetic understanding of your health. Guide your prevention with precision regarding ${lpItem.content.hero_headline}.`;
         html = await buildCampaignLandingPageHtml(lpItem);
       } else {
         // default to blog view
