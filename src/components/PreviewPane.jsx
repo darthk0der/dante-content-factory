@@ -29,11 +29,11 @@ function InsightBundlePreview({ item }) {
           <h3 style={{ padding: '24px 24px 12px', margin: 0, fontSize: '18px' }}>Organic Social</h3>
           <div style={{ padding: '0 24px' }}>
             <div className="card" style={{ background: '#fafafa' }}>
-              <div style={{ marginBottom: '16px' }}><strong>Twitter:</strong> {item.content.social_organic.twitter}</div>
-              <div style={{ marginBottom: '16px' }}><strong>LinkedIn:</strong> {item.content.social_organic.linkedin}</div>
-              <div style={{ marginBottom: '16px' }}><strong>Reddit:</strong> {item.content.social_organic.reddit}</div>
-              <div style={{ marginBottom: '16px' }}><strong>Facebook:</strong> {item.content.social_organic.facebook}</div>
-              <div><strong>Instagram:</strong> {item.content.social_organic.instagram}</div>
+              <div style={{ marginBottom: '16px', whiteSpace: 'pre-wrap' }}><strong>Twitter:</strong> {typeof item.content.social_organic.twitter === 'object' ? JSON.stringify(item.content.social_organic.twitter) : item.content.social_organic.twitter}</div>
+              <div style={{ marginBottom: '16px', whiteSpace: 'pre-wrap' }}><strong>LinkedIn:</strong> {typeof item.content.social_organic.linkedin === 'object' ? JSON.stringify(item.content.social_organic.linkedin) : item.content.social_organic.linkedin}</div>
+              <div style={{ marginBottom: '16px', whiteSpace: 'pre-wrap' }}><strong>Reddit:</strong> {typeof item.content.social_organic.reddit === 'object' ? `${item.content.social_organic.reddit.title || ''}\n\n${item.content.social_organic.reddit.body || ''}` : item.content.social_organic.reddit}</div>
+              <div style={{ marginBottom: '16px', whiteSpace: 'pre-wrap' }}><strong>Facebook:</strong> {typeof item.content.social_organic.facebook === 'object' ? JSON.stringify(item.content.social_organic.facebook) : item.content.social_organic.facebook}</div>
+              <div style={{ whiteSpace: 'pre-wrap' }}><strong>Instagram:</strong> {typeof item.content.social_organic.instagram === 'object' ? JSON.stringify(item.content.social_organic.instagram) : item.content.social_organic.instagram}</div>
             </div>
           </div>
         </div>
