@@ -60,6 +60,9 @@ export default function GenerateTab({ onGenerated }) {
     } else if (contentType === 'email') {
       if (!keyMessage.trim()) { alert('Please enter a key message.'); return; }
       generate({ content_type: 'email', topic: keyMessage.trim(), email_type: emailType });
+    } else if (contentType === 'insight_bundle') {
+      if (!topic.trim()) { alert('Please enter a trend/topic.'); return; }
+      generate({ content_type: 'insight_bundle', topic: topic.trim() });
     } else if (contentType === 'ad_copy') {
       if (!campaignObjective.trim()) { alert('Please enter a campaign objective.'); return; }
       generate({
@@ -111,6 +114,18 @@ export default function GenerateTab({ onGenerated }) {
             <label className="field-label">Condition</label>
             <input className="field-input" style={{ maxWidth: '480px' }}
               placeholder="e.g. Ehlers-Danlos Syndrome"
+              value={topic} onChange={(e) => setTopic(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
+            />
+          </div>
+        )}
+
+        {/* ── Insight Bundle ── */}
+        {contentType === 'insight_bundle' && (
+          <div style={{ marginBottom: '16px' }}>
+            <label className="field-label">Trend / Spike Topic</label>
+            <input className="field-input" style={{ maxWidth: '480px' }}
+              placeholder="e.g. MTHFR Gene Mutations and Diet"
               value={topic} onChange={(e) => setTopic(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
             />

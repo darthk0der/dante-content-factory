@@ -14,6 +14,7 @@ export const CONTENT_TYPE_LABELS = {
   twitter: 'Twitter/X Post',
   email: 'Email Campaign',
   ad_copy: 'Ad Copy',
+  insight_bundle: 'Trend Insight Bundle (8-piece)',
 };
 
 export const CONTENT_TYPES = [
