@@ -368,7 +368,10 @@ function MetaAdVariant({ v, i, imageUrl }) {
           ? <div style={{ position: 'relative' }}>
               <img src={imageUrl} alt="" style={{ width: '100%', height: '220px', objectFit: 'cover', display: 'block' }} />
               {showOverlay && (
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '24px' }}>
+                <div style={{
+                position: 'absolute', bottom: 0, left: 0, right: 0, padding: '24px', background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+                display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'stretch'
+              }}>
                   <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: 600, fontFamily: 'Outfit, sans-serif', textAlign: 'right', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
                     {v.headline}
                   </h2>

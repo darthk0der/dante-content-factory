@@ -1,5 +1,7 @@
 import { redis } from './_lib/redis.js';
 
+export const maxDuration = 300; // allow Vercel to wait for Kling Video Generation (up to 5m)
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 

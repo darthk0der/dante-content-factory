@@ -124,11 +124,11 @@ export async function buildCampaignLandingPageHtml(item) {
   // ── Hero Text Injection ───────────────────────────────────────────────────
   if (c.hero_headline) {
     // Replaces the first <h1> on the page
-    html = html.replace(/<h1[^>]*>[\s\S]*?<\/h1>/i, `<h1 style="font-size: clamp(32px, 4vw, 56px); line-height: 1.1; margin-bottom: 24px;">${c.hero_headline}</h1>`);
+    html = html.replace(/<h1[^>]*>[\s\S]*?<\/h1>/i, `<h1 style="font-size: clamp(32px, 4vw, 56px); line-height: 1.1; margin-bottom: 24px; color: #ffffff;">${c.hero_headline}</h1>`);
   }
   if (c.hero_subhead) {
     // Replaces the <p> immediately following the first <h1>
-    html = html.replace(/(<h1[^>]*>[\s\S]*?<\/h1>\s*)<p[^>]*>[\s\S]*?<\/p>/i, `$1<p style="font-size: 18px; line-height: 1.6; color: #ced4d9; max-width: 600px; margin-bottom: 0;">${c.hero_subhead}</p>`);
+    html = html.replace(/(<h1[^>]*>[\s\S]*?<\/h1>\s*)<p[^>]*>[\s\S]*?<\/p>/i, `$1<p style="font-size: 18px; line-height: 1.6; max-width: 600px; color: #ffffff;">${c.hero_subhead}</p>`);
   }
 
   // ── Hero CTAs ─────────────────────────────────────────────────────────────

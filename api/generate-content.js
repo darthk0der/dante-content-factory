@@ -1,6 +1,8 @@
 import { redis } from './_lib/redis.js';
 import { loadSkill } from './_lib/skills.js';
 
+export const maxDuration = 300;
+
 const SKILL_MAP = {
   twitter:        'Twitter_Post_SKILL.md',
   facebook:       'Facebook_Post_SKILL.md',

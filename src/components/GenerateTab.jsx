@@ -1,6 +1,19 @@
 import { useState } from 'react';
 import { CONTENT_TYPE_LABELS, TWITTER_FORMATS, EMAIL_TYPES, AD_PLATFORMS, AD_PRODUCTS, BLOG_TYPES } from '../lib/skills.js';
 
+const CONTENT_TYPES = [
+  { id: 'webpage', label: 'Webpage', title: 'Generate structural SEO or Campaign webpages' },
+  { id: 'twitter', label: 'Twitter/X Post', title: 'Generate high-performance X threads or single posts' },
+  { id: 'facebook', label: 'Facebook', title: 'Generate Facebook timeline posts' },
+  { id: 'reddit', label: 'Reddit', title: 'Generate highly customized Reddit posts for specific communities' },
+  { id: 'linkedin', label: 'LinkedIn', title: 'Generate professional thought-leadership posts' },
+  { id: 'instagram', label: 'Instagram', title: 'Generate robust IG captions and visual prompts' },
+  { id: 'email', label: 'Email Campaign', title: 'Generate CRM lifecycle and newsletter emails' },
+  { id: 'ad_copy', label: 'Ads', title: 'Generate 3 Meta and Google Ads variants simultaneously' },
+  { id: 'insight_bundle', label: '360° Content', title: 'Generate a full stack campaign matching Dante trends' },
+  { id: 'media', label: 'Standalone image/video', title: 'Generate naked Fal API visual assets without copy' },
+];
+
 export default function GenerateTab({ onGenerated }) {
   const [contentType, setContentType] = useState('landing_page');
 
@@ -102,15 +115,16 @@ export default function GenerateTab({ onGenerated }) {
       <div className="card" style={{ maxWidth: '700px' }}>
         <div className="editor-section-title" style={{ marginBottom: '14px' }}>Content Type</div>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '20px' }}>
-          {Object.entries(CONTENT_TYPE_LABELS).map(([type, label]) => (
-            <button key={type} onClick={() => setContentType(type)} className="btn"
+          {CONTENT_TYPES.map((ct) => (
+            <button key={ct.id} onClick={() => setContentType(ct.id)} className="btn"
+              title={ct.title}
               style={{
-                background: contentType === type ? 'var(--ink)' : 'transparent',
-                color: contentType === type ? '#fff' : 'var(--ink)',
-                border: `1px solid ${contentType === type ? 'var(--ink)' : 'var(--border)'}`,
+                background: contentType === ct.id ? 'var(--ink)' : 'transparent',
+                color: contentType === ct.id ? '#fff' : 'var(--ink)',
+                border: `1px solid ${contentType === ct.id ? 'var(--ink)' : 'var(--border)'}`,
               }}
             >
-              {label}
+              {ct.label}
             </button>
           ))}
         </div>
