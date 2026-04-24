@@ -125,10 +125,11 @@ Return ONLY a valid JSON object matching:
   "twitter": "Educational concise tweet (max 280 chars)",
   "linkedin": "Professional post aimed at adults concerned about hereditary risk.",
   "reddit": "Title and body for r/genetics or r/health. Must be conversational, educational, not a hard sell.",
+  "relevant_subreddits": ["r/Example1", "r/Example2", "r/Example3"],
   "facebook": "Engaging, conversational post for families.",
   "instagram": "Caption for the generated image, including 3-5 relevant exact hashtags."
 }
-Rules: No exclamation points. No diagnostic claims. No competitor mentions.`;
+Rules: No exclamation points. No diagnostic claims. No competitor mentions. The relevant_subreddits array MUST contain 3 researched communities where the reddit post safely fits without spam.`;
   const socialData = await callAnthropic(`${brandVoice}\n\nReturn ONLY valid JSON.`, socialUser);
 
   let imageUrl = null;
@@ -181,6 +182,10 @@ Rules: No exclamation points. No diagnostic claims. No competitor mentions.`;
     flags: blogData.flags || [],
     qa_status: 'READY_FOR_REVIEW'
   };
+
+  if (triggerSource === 'manual_ui_trigger') {
+    bundleItem.source = 'manual';
+  }
 
   await redis.set(`content:${bundleId}`, JSON.stringify(bundleItem));
   await redis.lpush('content:index', bundleId);

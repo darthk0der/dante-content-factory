@@ -7,11 +7,39 @@ export default function GenerateTab({ onGenerated }) {
   // Shared topic
   const [topic, setTopic] = useState('');
 
+  // Common Context
+  const [goal, setGoal] = useState('Educate and drive kit orders');
+  const [targetAudience, setTargetAudience] = useState('Adults 30–60 with family history');
+
+  const TARGET_AUDIENCES = [
+    'Adults 30–60 with family history',
+    'Proactive health optimizers',
+    'Patients with undiagnosed symptoms',
+    'Physicians and clinical specialists',
+    'Broader wellness consumers'
+  ];
+
+  const GOALS = [
+    'Educate and drive kit orders',
+    'Build brand authority',
+    'Generate engagement and community discussion',
+    'Address medical skepticism'
+  ];
+
+  // Webpage Subtype
+  const [webpageType, setWebpageType] = useState('landing_page');
+
   // Twitter
   const [format, setFormat] = useState('educational');
 
+  // Media
+  const [mediaType, setMediaType] = useState('photographic');
+  const [mediaAnimation, setMediaAnimation] = useState(false);
+  const [mediaAspectRatio, setMediaAspectRatio] = useState('16:9');
+
   // Blog
   const [blogType, setBlogType] = useState('educational');
+  const [patientStory, setPatientStory] = useState('john_doe'); // placeholder
 
   // Email
   const [emailType, setEmailType] = useState('newsletter');
@@ -21,7 +49,6 @@ export default function GenerateTab({ onGenerated }) {
   const [adPlatform, setAdPlatform] = useState('google');
   const [campaignObjective, setCampaignObjective] = useState('');
   const [product, setProduct] = useState('WGS');
-  const [targetAudience, setTargetAudience] = useState('');
 
   const [generating, setGenerating] = useState(false);
 
@@ -45,34 +72,26 @@ export default function GenerateTab({ onGenerated }) {
   }
 
   function handleGenerate() {
-    if (contentType === 'landing_page') {
-      if (!topic.trim()) { alert('Please enter a condition or topic.'); return; }
-      generate({ content_type: 'landing_page', topic: topic.trim() });
-    } else if (contentType === 'blog') {
+    const basePayload = { target_audience: targetAudience.trim(), goal: goal.trim() };
+
+    if (contentType === 'webpage') {
       if (!topic.trim()) { alert('Please enter a topic.'); return; }
-      generate({ content_type: 'blog', topic: topic.trim(), blog_type: blogType });
-    } else if (contentType === 'condition_page') {
-      if (!topic.trim()) { alert('Please enter a condition.'); return; }
-      generate({ content_type: 'condition_page', topic: topic.trim() });
-    } else if (contentType === 'twitter') {
+      generate({ ...basePayload, content_type: webpageType, topic: topic.trim(), blog_type: blogType, patient_story: blogType === 'patient_story' ? patientStory : undefined });
+    } else if (['twitter', 'facebook', 'reddit', 'linkedin', 'instagram'].includes(contentType)) {
       if (!topic.trim()) { alert('Please enter a topic.'); return; }
-      generate({ content_type: 'twitter', topic: topic.trim(), format });
+      generate({ ...basePayload, content_type: contentType, topic: topic.trim(), format: contentType === 'twitter' ? format : undefined });
     } else if (contentType === 'email') {
       if (!keyMessage.trim()) { alert('Please enter a key message.'); return; }
-      generate({ content_type: 'email', topic: keyMessage.trim(), email_type: emailType });
+      generate({ ...basePayload, content_type: 'email', topic: keyMessage.trim(), email_type: emailType });
     } else if (contentType === 'insight_bundle') {
       if (!topic.trim()) { alert('Please enter a trend/topic.'); return; }
-      generate({ content_type: 'insight_bundle', topic: topic.trim() });
+      generate({ ...basePayload, content_type: 'insight_bundle', topic: topic.trim() });
     } else if (contentType === 'ad_copy') {
       if (!campaignObjective.trim()) { alert('Please enter a campaign objective.'); return; }
-      generate({
-        content_type: 'ad_copy',
-        topic: campaignObjective.trim(),
-        ad_platform: adPlatform,
-        campaign_objective: campaignObjective.trim(),
-        product,
-        target_audience: targetAudience.trim(),
-      });
+      generate({ ...basePayload, content_type: 'ad_copy', topic: campaignObjective.trim(), ad_platform: adPlatform, campaign_objective: campaignObjective.trim(), product });
+    } else if (contentType === 'media') {
+      if (!topic.trim()) { alert('Please enter a visual description.'); return; }
+      generate({ ...basePayload, content_type: 'media', topic: topic.trim(), media_type: mediaType, is_animated: mediaAnimation, aspect_ratio: mediaAspectRatio });
     }
   }
 
@@ -96,65 +115,84 @@ export default function GenerateTab({ onGenerated }) {
           ))}
         </div>
 
-        {/* ── Landing page ── */}
-        {contentType === 'landing_page' && (
-          <div style={{ marginBottom: '16px' }}>
-            <label className="field-label">Condition / Topic</label>
-            <input className="field-input" style={{ maxWidth: '480px' }}
-              placeholder="e.g. Long QT Syndrome"
-              value={topic} onChange={(e) => setTopic(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
-            />
+        {/* ── Global Context (Target & Goal) ── */}
+        <div style={{ marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div>
+            <label className="field-label">Target Audience</label>
+            <select className="field-input" style={{ maxWidth: '600px', cursor: 'pointer' }}
+              value={targetAudience} onChange={(e) => setTargetAudience(e.target.value)}
+            >
+              {TARGET_AUDIENCES.map(aud => <option key={aud} value={aud}>{aud}</option>)}
+            </select>
           </div>
-        )}
-
-        {/* ── Condition Page ── */}
-        {contentType === 'condition_page' && (
-          <div style={{ marginBottom: '16px' }}>
-            <label className="field-label">Condition</label>
-            <input className="field-input" style={{ maxWidth: '480px' }}
-              placeholder="e.g. Ehlers-Danlos Syndrome"
-              value={topic} onChange={(e) => setTopic(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
-            />
+          <div>
+            <label className="field-label">Goal</label>
+            <select className="field-input" style={{ maxWidth: '600px', cursor: 'pointer' }}
+              value={goal} onChange={(e) => setGoal(e.target.value)}
+            >
+              {GOALS.map(g => <option key={g} value={g}>{g}</option>)}
+            </select>
           </div>
-        )}
+        </div>
 
-        {/* ── Insight Bundle ── */}
-        {contentType === 'insight_bundle' && (
-          <div style={{ marginBottom: '16px' }}>
-            <label className="field-label">Trend / Spike Topic</label>
-            <input className="field-input" style={{ maxWidth: '480px' }}
-              placeholder="e.g. MTHFR Gene Mutations and Diet"
-              value={topic} onChange={(e) => setTopic(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
-            />
-          </div>
-        )}
+        <div style={{ height: '1px', background: 'var(--border)', margin: '24px 0' }}></div>
 
-        {/* ── Blog ── */}
-        {contentType === 'blog' && (
-          <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        {/* ── Webpage ── */}
+        {contentType === 'webpage' && (
+          <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
-              <label className="field-label">Post Type</label>
+              <label className="field-label">Webpage Type</label>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {BLOG_TYPES.map((t) => (
-                  <button key={t.value} onClick={() => setBlogType(t.value)} className="btn btn-sm"
+                {['landing_page', 'condition_page', 'blog'].map((type) => (
+                  <button key={type} onClick={() => setWebpageType(type)} className="btn btn-sm"
                     style={{
-                      background: blogType === t.value ? 'var(--ink)' : 'transparent',
-                      color: blogType === t.value ? '#fff' : 'var(--text)',
-                      border: `1px solid ${blogType === t.value ? 'var(--ink)' : 'var(--border)'}`,
+                      background: webpageType === type ? 'var(--ink)' : 'transparent',
+                      color: webpageType === type ? '#fff' : 'var(--text)',
+                      border: `1px solid ${webpageType === type ? 'var(--ink)' : 'var(--border)'}`,
                     }}
                   >
-                    {t.label}
+                    {type === 'landing_page' ? 'Landing Page' : type === 'condition_page' ? 'Condition Page' : 'Blog Post'}
                   </button>
                 ))}
               </div>
             </div>
+
+            {webpageType === 'blog' && (
+              <div>
+                <label className="field-label">Blog Post Type</label>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {BLOG_TYPES.map((t) => (
+                    <button key={t.value} onClick={() => setBlogType(t.value)} className="btn btn-sm"
+                      title={t.description}
+                      style={{
+                        background: blogType === t.value ? 'var(--ink)' : 'transparent',
+                        color: blogType === t.value ? '#fff' : 'var(--text)',
+                        border: `1px solid ${blogType === t.value ? 'var(--ink)' : 'var(--border)'}`,
+                      }}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {webpageType === 'blog' && blogType === 'patient_story' && (
+              <div>
+                 <label className="field-label">Select Patient Story</label>
+                 <select className="field-input" style={{ maxWidth: '600px' }} value={patientStory} onChange={(e) => setPatientStory(e.target.value)}>
+                    <option value="john_doe">John Doe (Cardiology)</option>
+                    <option value="jane_smith">Jane Smith (Oncology)</option>
+                    <option value="michael_t">Michael T. (Rare Disease)</option>
+                    <option value="sarah_l">Sarah L. (Neurology)</option>
+                    <option value="david_w">David W. (Wellness)</option>
+                 </select>
+              </div>
+            )}
+
             <div>
-              <label className="field-label">Topic / Story Focus</label>
-              <input className="field-input" style={{ maxWidth: '480px' }}
-                placeholder="e.g. What hereditary cancer risk really means for families"
+              <label className="field-label">{webpageType === 'condition_page' ? 'Condition Focus' : 'Page Topic'}</label>
+              <input className="field-input" style={{ maxWidth: '600px' }}
+                placeholder="e.g. MTHFR Gene Mutations and Diet"
                 value={topic} onChange={(e) => setTopic(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
               />
@@ -162,28 +200,31 @@ export default function GenerateTab({ onGenerated }) {
           </div>
         )}
 
-        {/* ── Twitter ── */}
-        {contentType === 'twitter' && (
-          <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div>
-              <label className="field-label">Format</label>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {TWITTER_FORMATS.map((f) => (
-                  <button key={f.value} onClick={() => setFormat(f.value)} className="btn btn-sm"
-                    style={{
-                      background: format === f.value ? 'var(--accent)' : 'transparent',
-                      color: format === f.value ? '#fff' : 'var(--text)',
-                      border: `1px solid ${format === f.value ? 'var(--accent)' : 'var(--border)'}`,
-                    }}
-                  >
-                    {f.label}
-                  </button>
-                ))}
+        {/* ── Social Media (Twitter, Meta, etc) ── */}
+        {['twitter', 'facebook', 'reddit', 'linkedin', 'instagram'].includes(contentType) && (
+          <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {contentType === 'twitter' && (
+              <div>
+                <label className="field-label">Twitter Format</label>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {TWITTER_FORMATS.map((f) => (
+                    <button key={f.value} onClick={() => setFormat(f.value)} className="btn btn-sm"
+                      title={f.description}
+                      style={{
+                        background: format === f.value ? 'var(--accent)' : 'transparent',
+                        color: format === f.value ? '#fff' : 'var(--text)',
+                        border: `1px solid ${format === f.value ? 'var(--accent)' : 'var(--border)'}`,
+                      }}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
             <div>
-              <label className="field-label">Topic</label>
-              <input className="field-input" style={{ maxWidth: '480px' }}
+              <label className="field-label">Core Topic / Angle</label>
+              <input className="field-input" style={{ maxWidth: '600px' }}
                 placeholder="e.g. Why whole genome sequencing finds what panels miss"
                 value={topic} onChange={(e) => setTopic(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
@@ -194,12 +235,13 @@ export default function GenerateTab({ onGenerated }) {
 
         {/* ── Email ── */}
         {contentType === 'email' && (
-          <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
               <label className="field-label">Campaign Type</label>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 {EMAIL_TYPES.map((t) => (
                   <button key={t.value} onClick={() => setEmailType(t.value)} className="btn btn-sm"
+                    title={t.description}
                     style={{
                       background: emailType === t.value ? 'var(--ink)' : 'transparent',
                       color: emailType === t.value ? '#fff' : 'var(--text)',
@@ -213,7 +255,7 @@ export default function GenerateTab({ onGenerated }) {
             </div>
             <div>
               <label className="field-label">Key Message</label>
-              <input className="field-input" style={{ maxWidth: '480px' }}
+              <input className="field-input" style={{ maxWidth: '600px' }}
                 placeholder="e.g. WGS reveals what targeted panels miss — act on family risk now"
                 value={keyMessage} onChange={(e) => setKeyMessage(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
@@ -222,9 +264,9 @@ export default function GenerateTab({ onGenerated }) {
           </div>
         )}
 
-        {/* ── Ad Copy ── */}
+        {/* ── Ads ── */}
         {contentType === 'ad_copy' && (
-          <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
               <label className="field-label">Platform</label>
               <div style={{ display: 'flex', gap: '8px' }}>
@@ -240,13 +282,6 @@ export default function GenerateTab({ onGenerated }) {
                   </button>
                 ))}
               </div>
-            </div>
-            <div>
-              <label className="field-label">Campaign Objective</label>
-              <input className="field-input" style={{ maxWidth: '480px' }}
-                placeholder="e.g. Drive WGS test orders from people with family cancer history"
-                value={campaignObjective} onChange={(e) => setCampaignObjective(e.target.value)}
-              />
             </div>
             <div>
               <label className="field-label">Product</label>
@@ -265,10 +300,71 @@ export default function GenerateTab({ onGenerated }) {
               </div>
             </div>
             <div>
-              <label className="field-label">Target Audience</label>
-              <input className="field-input" style={{ maxWidth: '480px' }}
-                placeholder="e.g. Adults 30–60 with first-degree relatives with hereditary cancer"
-                value={targetAudience} onChange={(e) => setTargetAudience(e.target.value)}
+              <label className="field-label">Campaign Objective</label>
+              <input className="field-input" style={{ maxWidth: '600px' }}
+                placeholder="e.g. Drive WGS test orders from people with family cancer history"
+                value={campaignObjective} onChange={(e) => setCampaignObjective(e.target.value)}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* ── Insight Bundle ── */}
+        {contentType === 'insight_bundle' && (
+          <div style={{ marginBottom: '16px' }}>
+            <label className="field-label">Trend / Subject Topic</label>
+            <input className="field-input" style={{ maxWidth: '600px' }}
+              placeholder="e.g. MTHFR Gene Mutations and Diet"
+              value={topic} onChange={(e) => setTopic(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
+            />
+          </div>
+        )}
+
+        {/* ── Standalone Media ── */}
+        {contentType === 'media' && (
+          <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
+              <label className="field-label">Image Style</label>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {[{value:'photographic', label:'Photographic'}, {value:'product_focused', label:'Product Focused'}, {value:'pattern', label:'Brand Logo/Pattern'}].map((t) => (
+                  <button key={t.value} onClick={() => setMediaType(t.value)} className="btn btn-sm"
+                    style={{
+                      background: mediaType === t.value ? 'var(--ink)' : 'transparent',
+                      color: mediaType === t.value ? '#fff' : 'var(--text)',
+                      border: `1px solid ${mediaType === t.value ? 'var(--ink)' : 'var(--border)'}`,
+                    }}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="field-label">Aspect Ratio</label>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {['16:9', '1:1', '4:5', '9:16'].map((r) => (
+                  <button key={r} onClick={() => setMediaAspectRatio(r)} className="btn btn-sm"
+                    style={{
+                      background: mediaAspectRatio === r ? 'var(--ink)' : 'transparent',
+                      color: mediaAspectRatio === r ? '#fff' : 'var(--text)',
+                      border: `1px solid ${mediaAspectRatio === r ? 'var(--ink)' : 'var(--border)'}`,
+                    }}
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', cursor: 'pointer', color: 'var(--text)' }}>
+              <input type="checkbox" checked={mediaAnimation} onChange={(e) => setMediaAnimation(e.target.checked)} />
+              Animate final output (Video)
+            </label>
+            <div>
+              <label className="field-label">Visual Description / Brief</label>
+              <input className="field-input" style={{ maxWidth: '600px' }}
+                placeholder="e.g. A woman holding our test kit looking concerned in a modern kitchen"
+                value={topic} onChange={(e) => setTopic(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
               />
             </div>

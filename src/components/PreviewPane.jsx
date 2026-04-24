@@ -121,6 +121,8 @@ function TextPreview({ item }) {
   if (item.content_type === 'twitter') return <TwitterPreview item={item} />;
   if (item.content_type === 'email')   return <EmailPreview item={item} />;
   if (item.content_type === 'ad_copy') return <AdCopyPreview item={item} />;
+  if (['facebook', 'instagram', 'linkedin', 'reddit'].includes(item.content_type)) return <SocialPreview item={item} />;
+  if (item.content_type === 'media')   return <MediaPreview item={item} />;
   return null;
 }
 
@@ -159,6 +161,70 @@ function TwitterPreview({ item }) {
   );
 }
 
+function SocialPreview({ item }) {
+  const c = item.content || {};
+  let icon = '💬'; let color = '#000';
+  if (item.content_type === 'facebook') { icon = '📘'; color = '#1877F2'; }
+  if (item.content_type === 'instagram') { icon = '📸'; color = '#E1306C'; }
+  if (item.content_type === 'linkedin') { icon = '💼'; color = '#0A66C2'; }
+  if (item.content_type === 'reddit') { icon = '👽'; color = '#FF4500'; }
+
+  return (
+    <div className="card">
+      <div className="editor-section-title" style={{ marginBottom: '14px', textTransform: 'capitalize' }}>{item.content_type} Preview</div>
+      <div style={{
+        background: '#fff', border: '1px solid #cfd9de', borderRadius: '12px', padding: '16px', maxWidth: '520px',
+      }}>
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '10px', alignItems: 'center' }}>
+          <div style={{ fontSize: '24px' }}>{icon}</div>
+          <div style={{ fontWeight: 700, fontSize: '14px', color }}>Dante Labs</div>
+        </div>
+        <div style={{ fontSize: '15px', lineHeight: 1.55, color: '#1c1e21', whiteSpace: 'pre-wrap', marginBottom: '12px' }}>
+          {c.text || <span style={{ color: '#aaa' }}>No text yet</span>}
+        </div>
+        
+        {c.relevant_subreddits && (
+          <div style={{ marginTop: '12px', marginBottom: '12px', padding: '12px', background: '#f8f9fa', borderRadius: '8px', fontSize: '13px', border: '1px solid #e1e4e8' }}>
+            <strong style={{ display: 'block', marginBottom: '6px', color: '#1c1e21' }}>Targeted Subreddits:</strong>
+            <div style={{ color: '#536471' }}>{c.relevant_subreddits.join(', ')}</div>
+          </div>
+        )}
+
+        {item.image_url && (
+          <img src={item.image_url} alt="" style={{ width: '100%', borderRadius: '12px', objectFit: 'cover', maxHeight: '400px', display: 'block' }} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MediaPreview({ item }) {
+  return (
+    <div className="card">
+      <div className="editor-section-title" style={{ marginBottom: '14px' }}>Media Asset Preview</div>
+      <div style={{ background: '#f0f2f5', border: '1px dashed #cfd9de', borderRadius: '12px', padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '300px' }}>
+        {item.image_url ? (
+          item.is_animated ? (
+             <video src={item.image_url} controls autoPlay loop muted style={{ maxWidth: '100%', borderRadius: '8px', maxHeight: '500px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+          ) : (
+             <img src={item.image_url} alt="Standalone Asset" style={{ maxWidth: '100%', borderRadius: '8px', maxHeight: '500px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+          )
+        ) : (
+          <div style={{ color: 'var(--muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+            <span className="spinner" />
+            Generating asset via Fal AI...
+          </div>
+        )}
+        {item.content?.image_prompt && (
+          <div style={{ width: '100%', marginTop: '24px', fontSize: '13px', background: '#fff', border: '1px solid #e1e4e8', padding: '16px', borderRadius: '8px', color: '#536471', lineHeight: 1.5 }}>
+            <strong style={{ color: '#1c1e21' }}>Prompt Configuration:</strong><br /> {String(item.content?.image_prompt)}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function EmailPreview({ item }) {
   const c = item.content || {};
 
@@ -192,7 +258,7 @@ function EmailPreview({ item }) {
           </h1>
         )}
         {cleanHtml
-          ? <div dangerouslySetInnerHTML={{ __html: cleanHtml }} />
+          ? <div className="email-preview-content" dangerouslySetInnerHTML={{ __html: cleanHtml }} />
           : <p style={{ color: '#aaa' }}>No body content yet.</p>
         }
         {c.cta_text && (
@@ -302,8 +368,8 @@ function MetaAdVariant({ v, i, imageUrl }) {
           ? <div style={{ position: 'relative' }}>
               <img src={imageUrl} alt="" style={{ width: '100%', height: '220px', objectFit: 'cover', display: 'block' }} />
               {showOverlay && (
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-                  <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: 800, textAlign: 'center', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '24px' }}>
+                  <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: 600, fontFamily: 'Outfit, sans-serif', textAlign: 'right', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
                     {v.headline}
                   </h2>
                 </div>

@@ -3,6 +3,10 @@ import { loadSkill } from './_lib/skills.js';
 
 const SKILL_MAP = {
   twitter:        'Twitter_Post_SKILL.md',
+  facebook:       'Facebook_Post_SKILL.md',
+  linkedin:       'LinkedIn_Post_SKILL.md',
+  instagram:      'Instagram_Post_SKILL.md',
+  reddit:         'Reddit_Post_SKILL.md',
   blog:           'Blog_Post_SKILL.md',
   landing_page:   'Landing_Page_Sections_SKILL.md',
   condition_page: 'Condition_Page_SKILL.md',
@@ -28,31 +32,35 @@ const PHOTO_PROMPT = "The image_prompt field MUST describe a highly cinematic, p
 // ── Prompt builders ────────────────────────────────────────────────────────
 
 function buildUserPrompt(body) {
-  const { content_type, topic, format, email_type, ad_platform, campaign_objective, product, target_audience, blog_type } = body;
+  const { content_type, topic, format, email_type, ad_platform, campaign_objective, product, target_audience, goal, blog_type, patient_story } = body;
+
+  const targetStr = target_audience ? `\nTarget Audience: ${target_audience}` : '';
+  const goalStr = goal ? `\nGoal: ${goal}` : '';
+  const globalContext = targetStr || goalStr ? `\n---CONTEXT---${targetStr}${goalStr}\n-------------\n` : '';
 
   if (content_type === 'twitter') {
     return `Generate a Twitter/X post for Dante Labs about: ${topic}
-Format: ${format || 'educational'}
+Format: ${format || 'educational'}${globalContext}
 
 ${PHOTO_PROMPT}`;
   }
 
   if (content_type === 'blog') {
     return `Generate a blog post for Dante Labs about: ${topic}
-Type of post: ${blog_type || 'Educational'}
+Type of post: ${blog_type || 'Educational'}${blog_type === 'patient_story' ? `\nPatient Story Focus: ${patient_story || 'None'}` : ''}${globalContext}
 
-Important: The hero_image_alt field must be a descriptive alt text for the hero image (e.g. "A family discussing genetic health results with a doctor"). Do not leave it empty.
+Important: The hero_image_alt field must be a descriptive alt text for the hero image. Do not leave it empty.
 ${PHOTO_PROMPT}`;
   }
 
   if (content_type === 'landing_page') {
-    return `Generate a promotional conversion landing page for Dante Labs for: ${topic}
+    return `Generate a promotional conversion landing page for Dante Labs for: ${topic}${globalContext}
 
 ${PHOTO_PROMPT}`;
   }
 
   if (content_type === 'condition_page') {
-    return `Generate a comprehensive medical condition page for Dante Labs for: ${topic}
+    return `Generate a comprehensive medical condition page for Dante Labs for: ${topic}${globalContext}
 
 ${PHOTO_PROMPT}`;
   }
@@ -60,7 +68,7 @@ ${PHOTO_PROMPT}`;
   if (content_type === 'email') {
     const typeLabel = { newsletter: 'Newsletter', product_launch: 'Product Launch', re_engagement: 'Re-engagement', transactional: 'Transactional', informational: 'Informational' }[email_type] || email_type;
     return `Generate a Dante Labs ${typeLabel} email campaign.
-Key message: ${topic}
+Key message: ${topic}${globalContext}
 ${email_type === 'transactional' ? 'CRITICAL: This is a transactional/promotional email. It MUST be extremely short, punchy, and direct (max 2 short paragraphs).' : ''}
 
 Return ONLY a valid JSON object — no markdown, no code fences, no explanation. Use this exact schema:
@@ -164,7 +172,38 @@ Use this exact schema:
 Rules: Enforce character limits strictly. No exclamation points. No diagnostic claims. Each variant must have a clearly different angle and approach.`;
   }
 
-  return `Generate content about: ${topic}`;
+  if (['facebook', 'linkedin', 'instagram', 'reddit'].includes(content_type)) {
+    let platformSpecifics = '';
+    if (content_type === 'reddit') {
+       platformSpecifics = '\nCRITICAL: In your JSON output, beside the POST content, you MUST include an array called "relevant_subreddits" containing a list of 3 deeply researched, specific subreddits (e.g. r/genetics, r/mthfr) where this post would organically fit perfectly without looking like spam.';
+    }
+    return `Generate a ${content_type.charAt(0).toUpperCase() + content_type.slice(1)} post for Dante Labs.
+Topic: ${topic}${globalContext}${platformSpecifics}
+
+Return ONLY a valid JSON object:
+{
+  "text": "The highly engaging copy tailored exactly to ${content_type}'s native audience behavior and algorithms",
+  "image_prompt": "A prompt for a lifestyle image if needed, else empty"${content_type === 'reddit' ? ',\n  "relevant_subreddits": ["r/Example"]' : ''}
+}`;
+  }
+
+  if (content_type === 'media') {
+     return `You are a prompt engineering specialist. I want to generate a standalone image or video based on this brief: "${topic}".
+Image Style requested: ${body.media_type || 'photographic'}
+Is it going to be animated?: ${body.is_animated ? 'Yes' : 'No'}
+Target Audience context: ${target_audience || 'None provided'}
+Goal context: ${goal || 'None provided'}
+
+Expand this into a highly cinematic, photorealistic 8k raw prompt (if photographic), or a sleek editorial design (if pattern/logo).
+Return ONLY a valid JSON object:
+{
+  "image_prompt": "Your incredibly detailed image prompt here",
+  "media_type": "${body.media_type}",
+  "is_animated": ${body.is_animated}
+}`;
+  }
+
+  return `Generate content about: ${topic}${globalContext}`;
 }
 
 // ── Blog normaliser ────────────────────────────────────────────────────────
@@ -213,10 +252,23 @@ function cleanEmailBody(html) {
 
 // ── Auto image generation ──────────────────────────────────────────────────
 
-async function generateImageForItem(item) {
+async function generateImageForItem(item, customAspectRatio) {
   if (!process.env.FAL_API_KEY || !item.image_prompt) return item;
 
-  const model = item.content_type === 'landing_page' ? 'fal-ai/flux-pro' : 'fal-ai/flux/schnell';
+  let model = item.content_type === 'landing_page' ? 'fal-ai/flux-pro' : 'fal-ai/flux/schnell';
+  
+  if (item.content_type === 'media' && item.is_animated) {
+    model = 'fal-ai/kling-video/v1/standard/text-to-video';
+  }
+
+  // Mapping from our frontend 16:9 format to fal.run parameter
+  const sizeMap = {
+    '16:9': 'landscape_16_9',
+    '1:1': 'square_hd',
+    '4:5': 'portrait_4_5',
+    '9:16': 'portrait_16_9'
+  };
+  const targetSize = sizeMap[customAspectRatio] || 'landscape_16_9';
 
   try {
     const falRes = await fetch(`https://fal.run/${model}`, {
@@ -225,9 +277,9 @@ async function generateImageForItem(item) {
         Authorization: `Key ${process.env.FAL_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
+      body: JSON.stringify(item.is_animated ? { prompt: item.image_prompt, aspect_ratio: targetSize.includes('16_9') ? '16:9' : targetSize.includes('9_16') ? '9:16' : '1:1' } : {
         prompt: item.image_prompt,
-        image_size: 'landscape_16_9',
+        image_size: targetSize,
         num_images: 1,
       }),
     });
@@ -249,10 +301,10 @@ async function generateImageForItem(item) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { content_type, topic, format, email_type, ad_platform, campaign_objective, product, target_audience, source } = req.body;
+  const { content_type, topic, format, email_type, ad_platform, campaign_objective, product, target_audience, source, aspect_ratio, is_animated } = req.body;
   if (!content_type || !topic) return res.status(400).json({ error: 'Missing content_type or topic' });
 
-  const validTypes = ['landing_page', 'condition_page', 'blog', 'twitter', 'email', 'ad_copy', 'insight_bundle'];
+  const validTypes = ['landing_page', 'condition_page', 'blog', 'twitter', 'email', 'ad_copy', 'insight_bundle', 'facebook', 'linkedin', 'instagram', 'reddit', 'media'];
   if (!validTypes.includes(content_type)) return res.status(400).json({ error: `Unknown content_type: ${content_type}` });
 
   // Load skill(s)
@@ -374,11 +426,16 @@ export default async function handler(req, res) {
   delete item.content.qa_status;
   delete item.content.image_prompt;
 
-  // Auto-generate image for Twitter, blog, landing_page, and Meta ads
-  const autoImageTypes = ['twitter', 'blog', 'landing_page'];
+  // Auto-generate image for Twitter, blog, landing_page, Meta ads, and Standalone Media
+  const autoImageTypes = ['twitter', 'blog', 'landing_page', 'media'];
   const isMetaAd = content_type === 'ad_copy' && ad_platform === 'meta';
+  
+  if (content_type === 'media') {
+    item.is_animated = is_animated || parsed.is_animated;
+  }
+
   if ((autoImageTypes.includes(content_type) || isMetaAd) && item.image_prompt) {
-    await generateImageForItem(item);
+    await generateImageForItem(item, aspect_ratio);
   }
 
   await redis.set(`content:${item.id}`, JSON.stringify(item));

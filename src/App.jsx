@@ -142,7 +142,7 @@ export default function App() {
             )}
             {tab === 'insights' && (
               <AutoQueueTab
-                items={items.filter(i => i.content_type === 'insight_bundle')}
+                items={items.filter(i => i.content_type === 'insight_bundle' && i.source !== 'manual')}
                 onUpdate={handleUpdate}
                 onPublish={handlePublish}
                 onSchedule={handleSchedule}

@@ -373,3 +373,15 @@ textarea, input, select { font-family: inherit; }
   border-radius: var(--radius);
   min-height: 120px;
 }
+
+/* ── Email generated preview content formatting ─────────────────────────── */
+.email-preview-content p {
+  margin-bottom: 1em;
+}
+.email-preview-content ul, .email-preview-content ol {
+  margin-bottom: 1em;
+  padding-left: 20px;
+}
+.email-preview-content li {
+  margin-bottom: 0.5em;
+}
