@@ -127,8 +127,10 @@ Use this exact schema:
   ]
 }
 
-Rules: No exclamation points. No diagnostic claims. No competitor mentions. Each variant must have a clearly different angle.
-
+Rules: 
+- Meta Ad Primary Text MUST NEVER exceed 125 characters. 
+- Meta Ad Headlines MUST NEVER exceed 40 characters. Ensure all text falls strictly under these limits.
+- No exclamation points. No diagnostic claims. No competitor mentions. Each variant must have a clearly different angle.
 Also include a top-level "image_prompt" field describing the ideal ad image: ${product === 'WGS' ? 'A photorealistic lifestyle photo of a person holding or looking at the physical Dante Labs WGS testing kit box in a nice home setting.' : 'A lifestyle editorial photo of a real person or family relevant to the campaign objective.'} ${PHOTO_PROMPT}`;
     }
 
