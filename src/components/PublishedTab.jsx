@@ -51,6 +51,16 @@ export default function PublishedTab({ items }) {
                   View tweet →
                 </a>
               )}
+              {item.post_url && (
+                <a
+                  href={item.post_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-sm btn-outline"
+                >
+                  View post →
+                </a>
+              )}
             </div>
           </div>
         ))}

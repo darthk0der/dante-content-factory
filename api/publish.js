@@ -109,7 +109,7 @@ async function twitterUploadMedia(imageUrl) {
 
 async function twitterPost(text, imageUrl) {
   if (!process.env.TWITTER_API_KEY) {
-    return { pending: true, message: 'Twitter not configured' };
+    throw new Error('Twitter API keys are missing in Vercel. Please configure them to publish.');
   }
 
   let mediaId;
@@ -149,7 +149,7 @@ async function twitterPost(text, imageUrl) {
 
 async function resendBroadcast(subject, htmlBody) {
   if (!process.env.RESEND_API_KEY) {
-    return { pending: true, message: 'Resend API not configured' };
+    throw new Error('Resend API keys are missing in Vercel. Please add RESEND_API_KEY.');
   }
   
   const audienceId = process.env.RESEND_AUDIENCE_ID;
@@ -185,7 +185,7 @@ async function resendBroadcast(subject, htmlBody) {
 
 async function linkedinPost(text, imageUrl) {
   if (!process.env.LINKEDIN_ACCESS_TOKEN || !process.env.LINKEDIN_URN) {
-    return { pending: true, message: 'LinkedIn not configured' };
+    throw new Error('LinkedIn API keys are missing in Vercel. Please add LINKEDIN_ACCESS_TOKEN and LINKEDIN_URN.');
   }
   
   // Create ugcPost
@@ -239,7 +239,7 @@ async function linkedinPost(text, imageUrl) {
 
 async function facebookPost(text, imageUrl) {
   if (!process.env.FACEBOOK_PAGE_ACCESS_TOKEN || !process.env.FACEBOOK_PAGE_ID) {
-    return { pending: true, message: 'Facebook not configured' };
+    throw new Error('Facebook API keys are missing in Vercel. Please add FACEBOOK_PAGE_ACCESS_TOKEN and FACEBOOK_PAGE_ID.');
   }
   const pageId = process.env.FACEBOOK_PAGE_ID;
   const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
@@ -261,12 +261,15 @@ async function facebookPost(text, imageUrl) {
     throw new Error(`Facebook API error ${res.status}: ${err}`);
   }
   const data = await res.json();
-  return { post_id: data.id };
+  return { 
+    post_id: data.id, 
+    post_url: `https://facebook.com/${data.id}` 
+  };
 }
 
 async function instagramPost(text, imageUrl) {
   if (!process.env.FACEBOOK_PAGE_ACCESS_TOKEN || !process.env.INSTAGRAM_USER_ID) {
-    return { pending: true, message: 'Instagram not configured' };
+    throw new Error('Instagram API keys are missing in Vercel. Please add FACEBOOK_PAGE_ACCESS_TOKEN and INSTAGRAM_USER_ID.');
   }
   if (!imageUrl) {
     throw new Error('Instagram requires an image');
@@ -295,7 +298,10 @@ async function instagramPost(text, imageUrl) {
   if (!pRes.ok) throw new Error(`IG media publish failed: ${await pRes.text()}`);
   const pData = await pRes.json();
   
-  return { post_id: pData.id };
+  return { 
+    post_id: pData.id,
+    post_url: 'https://instagram.com/' // Direct post URL requires shortcode, linking to main IG for now
+  };
 }
 
 // ── Blog HTML builder ─────────────────────────────────────────────────────────

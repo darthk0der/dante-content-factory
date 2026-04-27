@@ -455,7 +455,7 @@ export default async function handler(req, res) {
   delete item.content.image_prompt;
 
   // Auto-generate image for Twitter, blog, landing_page, Meta ads, and Standalone Media
-  const autoImageTypes = ['twitter', 'blog', 'landing_page', 'media'];
+  const autoImageTypes = ['twitter', 'blog', 'landing_page', 'media', 'facebook', 'instagram', 'linkedin'];
   const isMetaAd = content_type === 'ad_copy' && ad_platform === 'meta';
   
   if (content_type === 'media') {
