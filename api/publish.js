@@ -145,6 +145,159 @@ async function twitterPost(text, imageUrl) {
   };
 }
 
+// ── Resend API ───────────────────────────────────────────────────────────────
+
+async function resendBroadcast(subject, htmlBody) {
+  if (!process.env.RESEND_API_KEY) {
+    return { pending: true, message: 'Resend API not configured' };
+  }
+  
+  const audienceId = process.env.RESEND_AUDIENCE_ID;
+  const fromEmail = process.env.RESEND_FROM_EMAIL || 'marketing@dantelabs.com';
+
+  const body = {
+    audience_id: audienceId,
+    from: fromEmail,
+    subject: subject,
+    html: htmlBody,
+  };
+
+  const res = await fetch('https://api.resend.com/emails/broadcasts', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Resend API error ${res.status}: ${err}`);
+  }
+  const data = await res.json();
+  return {
+    broadcast_id: data.id,
+  };
+}
+
+// ── LinkedIn API ─────────────────────────────────────────────────────────────
+
+async function linkedinPost(text, imageUrl) {
+  if (!process.env.LINKEDIN_ACCESS_TOKEN || !process.env.LINKEDIN_URN) {
+    return { pending: true, message: 'LinkedIn not configured' };
+  }
+  
+  // Create ugcPost
+  const author = process.env.LINKEDIN_URN; // e.g. urn:li:organization:12345
+  const body = {
+    author: author,
+    lifecycleState: "PUBLISHED",
+    specificContent: {
+      "com.linkedin.ugc.ShareContent": {
+        shareCommentary: { text },
+        shareMediaCategory: imageUrl ? "ARTICLE" : "NONE",
+      }
+    },
+    visibility: {
+      "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"
+    }
+  };
+
+  if (imageUrl) {
+    body.specificContent["com.linkedin.ugc.ShareContent"].media = [
+      {
+        status: "READY",
+        originalUrl: imageUrl,
+        title: { text: "Image" }
+      }
+    ];
+  }
+
+  const res = await fetch('https://api.linkedin.com/v2/ugcPosts', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.LINKEDIN_ACCESS_TOKEN}`,
+      'X-Restli-Protocol-Version': '2.0.0',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`LinkedIn API error ${res.status}: ${err}`);
+  }
+  const data = await res.json();
+  return {
+    post_id: data.id,
+    post_url: `https://www.linkedin.com/feed/update/${data.id}`
+  };
+}
+
+// ── Meta Graph API (Facebook/Instagram) ──────────────────────────────────────
+
+async function facebookPost(text, imageUrl) {
+  if (!process.env.FACEBOOK_PAGE_ACCESS_TOKEN || !process.env.FACEBOOK_PAGE_ID) {
+    return { pending: true, message: 'Facebook not configured' };
+  }
+  const pageId = process.env.FACEBOOK_PAGE_ID;
+  const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+  
+  let url = `https://graph.facebook.com/v19.0/${pageId}/feed`;
+  let body = { message: text, access_token: token };
+
+  if (imageUrl) {
+    url = `https://graph.facebook.com/v19.0/${pageId}/photos`;
+    body = { caption: text, url: imageUrl, access_token: token };
+  }
+
+  const form = new URLSearchParams();
+  for (const [k, v] of Object.entries(body)) form.append(k, v);
+
+  const res = await fetch(url, { method: 'POST', body: form });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Facebook API error ${res.status}: ${err}`);
+  }
+  const data = await res.json();
+  return { post_id: data.id };
+}
+
+async function instagramPost(text, imageUrl) {
+  if (!process.env.FACEBOOK_PAGE_ACCESS_TOKEN || !process.env.INSTAGRAM_USER_ID) {
+    return { pending: true, message: 'Instagram not configured' };
+  }
+  if (!imageUrl) {
+    throw new Error('Instagram requires an image');
+  }
+
+  const igUserId = process.env.INSTAGRAM_USER_ID;
+  const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+
+  const mediaUrl = `https://graph.facebook.com/v19.0/${igUserId}/media`;
+  const mForm = new URLSearchParams({
+    image_url: imageUrl,
+    caption: text,
+    access_token: token,
+  });
+  const mRes = await fetch(mediaUrl, { method: 'POST', body: mForm });
+  if (!mRes.ok) throw new Error(`IG media create failed: ${await mRes.text()}`);
+  const mData = await mRes.json();
+  const creationId = mData.id;
+
+  const pubUrl = `https://graph.facebook.com/v19.0/${igUserId}/media_publish`;
+  const pForm = new URLSearchParams({
+    creation_id: creationId,
+    access_token: token,
+  });
+  const pRes = await fetch(pubUrl, { method: 'POST', body: pForm });
+  if (!pRes.ok) throw new Error(`IG media publish failed: ${await pRes.text()}`);
+  const pData = await pRes.json();
+  
+  return { post_id: pData.id };
+}
+
 // ── Blog HTML builder ─────────────────────────────────────────────────────────
 
 function esc(str) {
@@ -210,6 +363,18 @@ export async function publishItem(item, redisClient) {
 
   if (item.content_type === 'twitter') {
     result = await twitterPost(item.content.text, item.image_url || null);
+
+  } else if (item.content_type === 'linkedin') {
+    result = await linkedinPost(item.content.text, item.image_url || null);
+
+  } else if (item.content_type === 'facebook') {
+    result = await facebookPost(item.content.text, item.image_url || null);
+
+  } else if (item.content_type === 'instagram') {
+    result = await instagramPost(item.content.text, item.image_url || null);
+    
+  } else if (item.content_type === 'email') {
+    result = await resendBroadcast(item.content.subject || 'Dante Labs Update', item.content.body_html || item.content.text);
 
   } else if (item.content_type === 'blog') {
     const html = buildBlogHtml(item);
