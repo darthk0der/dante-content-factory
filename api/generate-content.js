@@ -291,8 +291,11 @@ async function generateImageForItem(item, customAspectRatio) {
     if (!falRes.ok) return item; // fail silently, don't block content
 
     const falData = await falRes.json();
-    const image_url = falData?.images?.[0]?.url || falData?.image?.url || null;
-    if (image_url) item.image_url = image_url;
+    const media_url = falData?.video?.url || falData?.images?.[0]?.url || falData?.image?.url || null;
+    if (media_url) {
+      if (item.is_animated) item.video_url = media_url;
+      else item.image_url = media_url;
+    }
   } catch {
     // fail silently
   }

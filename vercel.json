@@ -3,7 +3,7 @@
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "functions": {
-    "api/*.js": { "maxDuration": 120 }
+    "api/*.js": { "maxDuration": 300 }
   },
   "crons": [
     { "path": "/api/cron-publish",      "schedule": "*/5 * * * *" },
