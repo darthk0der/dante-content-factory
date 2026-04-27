@@ -31,7 +31,14 @@ Fill in the Auto Queue tab with real data. SEO blog queue cron, weekly Ahrefs ke
 **Phase 3 — Social listening integration & Trend Hub** ✅ COMPLETE
 Added `GET /api/social-trending` to the ARRCC project (separate deployment). Unified ARRCC social signals and Ahrefs SEO signals into a single "Trend Hub" via `_lib/insightBundleHelper.js`. Generates complete `insight_bundle` packages (Blog, Meta Ads, Google Ads, Landing Page Funnel) in a single workflow.
 
-All phases are now complete.
+**Phase 4 — Workflow Polish** ✅ COMPLETE
+UI and validation fixes. Character count constraints on prompts, stripping hashtags out of social copy, and separating Trend Hub from standard Auto Queue.
+
+**Phase 5 — API Publishing Integrations** ✅ COMPLETE
+Direct publishing architecture to replace Framer dependency. Added Resend API for emails, Meta Graph API for Facebook/Instagram, and LinkedIn API.
+
+**Phase 6 — AI Memory System** ✅ COMPLETE
+Added `api/extract-feedback.js` to automatically extract rules from manual user edits. Built the `MemoryTab.jsx` UI to surface, review, and delete the retroactively learned rules.
 
 ---
 
@@ -157,7 +164,10 @@ Auto-generated items never bypass this queue. Nothing publishes automatically wi
 Items with `status: scheduled`, sorted by `scheduled_at` ascending. Shows content type, topic, scheduled datetime, platform. Cancel button moves item back to `approved`.
 
 ### Tab 5: Published
-Items with `status: published`, sorted by `published_at` descending. Shows content type, topic, published datetime, live URL or tweet link.
+Items with `status: published`, sorted by `published_at` descending. Shows content type, topic, published datetime, live URL or tweet link. Includes a "View post →" button powered by the `post_url` property returned from the publishing APIs.
+
+### Tab 6: Memory
+Displays the `content:global_rules` array from Redis. These rules are automatically extracted by Claude via `api/extract-feedback.js` when a user edits AI-generated content and clicks "Save". Includes a "Delete" button for manual curation of the AI's learning.
 
 ---
 
@@ -620,8 +630,6 @@ Do not build:
 - Customer story matching
 - Brand auto-suggestion for BRAND flags
 - Duplicate detection UI
-- Reddit integration (Twitter/X only for now)
-- Any publishing to Instagram or LinkedIn
 - The full 6-section condition page scaffold from `content_factory_scaffold_v1.md` — V2 uses `Landing_Page_Sections_SKILL.md` for Sections 1–3 only, populates the full `condition.html` template
 
 ---
