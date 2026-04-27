@@ -4,6 +4,7 @@ import ReviewTab from './components/ReviewTab.jsx';
 import AutoQueueTab from './components/AutoQueueTab.jsx';
 import ScheduledTab from './components/ScheduledTab.jsx';
 import PublishedTab from './components/PublishedTab.jsx';
+import MemoryTab from './components/MemoryTab.jsx';
 
 const TABS = [
   { id: 'generate',   label: 'Generate' },
@@ -12,6 +13,7 @@ const TABS = [
   { id: 'auto',       label: 'Auto Queue' },
   { id: 'scheduled',  label: 'Scheduled' },
   { id: 'published',  label: 'Published' },
+  { id: 'memory',     label: 'Memory' },
 ];
 
 const AUTO_SOURCES = ['seo_queue', 'spike', 'daily_tweet', 'social_ads'];
@@ -166,6 +168,9 @@ export default function App() {
             )}
             {tab === 'published' && (
               <PublishedTab items={items} />
+            )}
+            {tab === 'memory' && (
+              <MemoryTab />
             )}
           </>
         )}
