@@ -23,7 +23,7 @@ const CONTENT_TYPES = [
 ];
 
 export default function GenerateTab({ onGenerated }) {
-  const [contentType, setContentType] = useState('landing_page');
+  const [contentType, setContentType] = useState('');
 
   // Shared topic
   const [topic, setTopic] = useState('');
@@ -138,24 +138,26 @@ export default function GenerateTab({ onGenerated }) {
         </div>
 
         {/* ── Global Context (Target & Goal) ── */}
-        <div style={{ marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <div>
-            <label className="field-label">Target Audience</label>
-            <select className="field-input" style={{ maxWidth: '600px', cursor: 'pointer' }}
-              value={targetAudience} onChange={(e) => setTargetAudience(e.target.value)}
-            >
-              {TARGET_AUDIENCES.map(aud => <option key={aud} value={aud}>{aud}</option>)}
-            </select>
+        {contentType !== 'media' && (
+          <div style={{ marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div>
+              <label className="field-label">Target Audience</label>
+              <select className="field-input" style={{ maxWidth: '600px', cursor: 'pointer' }}
+                value={targetAudience} onChange={(e) => setTargetAudience(e.target.value)}
+              >
+                {TARGET_AUDIENCES.map(aud => <option key={aud} value={aud}>{aud}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="field-label">Goal</label>
+              <select className="field-input" style={{ maxWidth: '600px', cursor: 'pointer' }}
+                value={goal} onChange={(e) => setGoal(e.target.value)}
+              >
+                {GOALS.map(g => <option key={g} value={g}>{g}</option>)}
+              </select>
+            </div>
           </div>
-          <div>
-            <label className="field-label">Goal</label>
-            <select className="field-input" style={{ maxWidth: '600px', cursor: 'pointer' }}
-              value={goal} onChange={(e) => setGoal(e.target.value)}
-            >
-              {GOALS.map(g => <option key={g} value={g}>{g}</option>)}
-            </select>
-          </div>
-        </div>
+        )}
 
         <div style={{ height: '1px', background: 'var(--border)', margin: '24px 0' }}></div>
 
@@ -311,9 +313,9 @@ export default function GenerateTab({ onGenerated }) {
                 {AD_PRODUCTS.map((p) => (
                   <button key={p.value} onClick={() => setProduct(p.value)} className="btn btn-sm"
                     style={{
-                      background: product === p.value ? 'var(--accent)' : 'transparent',
+                      background: product === p.value ? 'var(--ink)' : 'transparent',
                       color: product === p.value ? '#fff' : 'var(--text)',
-                      border: `1px solid ${product === p.value ? 'var(--accent)' : 'var(--border)'}`,
+                      border: `1px solid ${product === p.value ? 'var(--ink)' : 'var(--border)'}`,
                     }}
                   >
                     {p.label}
@@ -393,10 +395,10 @@ export default function GenerateTab({ onGenerated }) {
           </div>
         )}
 
-        <button className="btn btn-primary" onClick={handleGenerate} disabled={generating} style={{ minWidth: '140px' }}>
+        <button className="btn btn-primary" onClick={handleGenerate} disabled={generating || !contentType} style={{ minWidth: '140px' }}>
           {generating
             ? <><span className="spinner-dark" /> Generating…</>
-            : `Generate ${CONTENT_TYPE_LABELS[contentType]}`}
+            : !contentType ? 'Generate' : `Generate ${CONTENT_TYPE_LABELS[contentType]}`}
         </button>
       </div>
     </div>

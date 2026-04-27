@@ -357,6 +357,9 @@ export default async function handler(req, res) {
   }
 
   // Handle Insight Bundle routing
+    // Strict requirement for character counts
+    systemPrompt += `\n\nSTRICT REQUIREMENT: You must ruthlessly obey any character or word count limits specified in the prompt for this platform or format. Do not exceed the limits under any circumstances.`;
+
   if (content_type === 'insight_bundle') {
     const { generateInsightBundle } = await import('./_lib/insightBundleHelper.js');
     const brandVoiceOnly = systemPrompt; // The full system prompt with learned rules
@@ -404,6 +407,10 @@ export default async function handler(req, res) {
     if (content_type === 'blog') {
       parsed = normaliseBlog(parsed);
     }
+    if (content_type === 'webpage' && body.webpage_type === 'blog') {
+      parsed.body_html = cleanEmailBody(parsed.body_html);
+    }
+
     if (content_type === 'email' && parsed.body_html) {
       parsed.body_html = cleanEmailBody(parsed.body_html);
     }

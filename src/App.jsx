@@ -18,8 +18,8 @@ const AUTO_SOURCES = ['seo_queue', 'spike', 'daily_tweet', 'social_ads'];
 
 function TabCount({ items, tabId }) {
   const count = {
-    insights:  items.filter((i) => i.content_type === 'insight_bundle' && (i.status === 'review' || i.status === 'approved')).length,
-    review:    items.filter((i) => i.content_type !== 'insight_bundle' && !AUTO_SOURCES.includes(i.source) && (i.status === 'review' || i.status === 'approved')).length,
+    insights:  items.filter((i) => i.content_type === 'insight_bundle' && i.source !== 'manual' && (i.status === 'review' || i.status === 'approved')).length,
+    review:    items.filter((i) => !AUTO_SOURCES.includes(i.source) && (i.status === 'review' || i.status === 'approved')).length,
     auto:      items.filter((i) => i.content_type !== 'insight_bundle' && AUTO_SOURCES.includes(i.source) && (i.status === 'review' || i.status === 'approved')).length,
     scheduled: items.filter((i) => i.status === 'scheduled').length,
     published: items.filter((i) => i.status === 'published').length,
