@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import FlagsPanel from './FlagsPanel.jsx';
 import PreviewPane from './PreviewPane.jsx';
 
@@ -212,7 +212,37 @@ export default function Editor({ item, onUpdate, onPublish, onSchedule, onDelete
   const [publishing, setPublishing] = useState(false);
   const [imageGenerating, setImageGenerating] = useState(false);
   const [videoGenerating, setVideoGenerating] = useState(false);
+  const [videoPolling, setVideoPolling] = useState(false);
   const [notification, setNotification] = useState(null);
+
+  useEffect(() => {
+    let interval;
+    if (item.fal_request_id && !item.video_url) {
+      setVideoPolling(true);
+      interval = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/poll-video?id=${item.id}`);
+          const data = await res.json();
+          if (data.status === 'COMPLETED' && data.video_url) {
+             setVideoPolling(false);
+             onUpdate({ ...item, video_url: data.video_url, fal_request_id: null });
+             clearInterval(interval);
+          } else if (data.error) {
+             setVideoPolling(false);
+             notify(`Video Generation Error: ${data.error}`, 'error');
+             clearInterval(interval);
+          }
+        } catch(e) {
+           console.error(e);
+        }
+      }, 8000);
+    } else {
+      setVideoPolling(false);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    }
+  }, [item.id, item.fal_request_id, item.video_url]);
 
   function notify(msg, type = 'success') {
     setNotification({ msg, type });
@@ -520,32 +550,43 @@ export default function Editor({ item, onUpdate, onPublish, onSchedule, onDelete
           {showImage && (
             <div className="card">
               <div className="editor-section-title" style={{ marginBottom: '12px' }}>Image</div>
-              {item.image_url ? (
-                <>
-                  <img src={item.image_url} alt="" className="img-preview" style={{ maxHeight: '200px' }} />
-                  <button className="btn btn-sm btn-outline" style={{ width: '100%', marginBottom: '8px' }}
-                    onClick={handleGenerateImage} disabled={imageGenerating}>
-                    Regenerate image
-                  </button>
-                  {item.image_url && (
-                    <>
-                      <button className="btn btn-sm btn-accent" style={{ width: '100%' }} onClick={handleGenerateVideo} disabled={videoGenerating || item.video_url}>
-                        {videoGenerating ? 'Generating Video...' : item.video_url ? 'Video generated' : 'Generate 6s Video'}
+              {videoPolling && (
+                <div style={{ padding: '20px', background: '#f8fafc', borderRadius: '8px', textAlign: 'center', marginBottom: '12px', border: '1px solid var(--border)' }}>
+                  <div style={{ marginBottom: '8px' }}><span className="spinner-light" style={{ borderTopColor: 'var(--ink)' }}></span></div>
+                  <div style={{ fontSize: '13px', fontWeight: 600 }}>Rendering Video…</div>
+                  <div style={{ marginTop: '4px', fontSize: '11px', color: 'var(--muted)' }}>This may take 2-4 minutes.<br/>You can safely close this panel.</div>
+                </div>
+              )}
+
+              {item.video_url && !videoPolling && (
+                <div style={{ marginBottom: '12px' }}>
+                  <video src={item.video_url} controls loop autoPlay playsInline style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--border)', maxHeight: '200px' }} />
+                </div>
+              )}
+
+              {!videoPolling && (
+                item.image_url ? (
+                  <>
+                    <img src={item.image_url} alt="" className="img-preview" style={{ maxHeight: '200px' }} />
+                    <button className="btn btn-sm btn-outline" style={{ width: '100%', marginBottom: '8px' }}
+                      onClick={handleGenerateImage} disabled={imageGenerating}>
+                      Regenerate image
+                    </button>
+                    {!item.video_url && (
+                      <button className="btn btn-sm btn-accent" style={{ width: '100%' }} onClick={handleGenerateVideo} disabled={videoGenerating}>
+                        {videoGenerating ? 'Starting Generation...' : 'Generate 6s Video'}
                       </button>
-                      {item.video_url && (
-                        <video src={item.video_url} controls loop autoPlay playsInline style={{ width: '100%', marginTop: '12px', borderRadius: '8px', border: '1px solid var(--border)', maxHeight: '200px' }} />
-                      )}
-                    </>
-                  )}
-                </>
-              ) : (
-                <>
-                  <div className="img-placeholder">No image yet</div>
-                  <button className="btn btn-sm btn-outline" style={{ width: '100%' }}
-                    onClick={handleGenerateImage} disabled={imageGenerating || !item.image_prompt}>
-                    {imageGenerating ? <><span className="spinner-light" /> Generating…</> : item.image_prompt ? 'Generate image' : 'No prompt'}
-                  </button>
-                </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {!item.video_url && <div className="img-placeholder">No image yet</div>}
+                    <button className="btn btn-sm btn-outline" style={{ width: '100%' }}
+                      onClick={handleGenerateImage} disabled={imageGenerating || !item.image_prompt}>
+                      {imageGenerating ? <><span className="spinner-light" /> Generating…</> : item.image_prompt ? 'Generate image' : 'No prompt'}
+                    </button>
+                  </>
+                )
               )}
               {item.image_prompt && (
                 <div style={{ marginTop: '8px', fontSize: '11px', color: 'var(--muted)', lineHeight: 1.5 }}>

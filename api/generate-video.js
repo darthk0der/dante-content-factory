@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   if (!process.env.FAL_API_KEY) return res.status(500).json({ error: 'FAL_API_KEY not configured' });
 
   try {
-    const falRes = await fetch('https://fal.run/fal-ai/kling-video/v1/standard/image-to-video', {
+    const falRes = await fetch('https://queue.fal.run/fal-ai/kling-video/v1/standard/image-to-video', {
       method: 'POST',
       headers: {
         Authorization: `Key ${process.env.FAL_API_KEY}`,
@@ -30,20 +30,25 @@ export default async function handler(req, res) {
     }
 
     const data = await falRes.json();
-    const video_url = data?.video?.url || null;
+    const request_id = data?.request_id;
+    const status_url = data?.status_url;
+    const response_url = data?.response_url;
 
-    if (!video_url) {
-      return res.status(500).json({ error: 'FAL returned no video URL' });
+    if (!request_id) {
+      return res.status(500).json({ error: 'FAL returned no request ID' });
     }
 
     const raw = await redis.get(`content:${id}`);
     if (raw) {
       const item = JSON.parse(raw);
-      item.video_url = video_url;
+      item.fal_request_id = request_id;
+      item.fal_status_url = status_url;
+      item.fal_response_url = response_url;
+      item.video_url = null; // Clear existing video if regenerating
       await redis.set(`content:${item.id}`, JSON.stringify(item));
     }
 
-    res.status(200).json({ video_url });
+    res.status(200).json({ request_id });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

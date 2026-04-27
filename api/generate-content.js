@@ -261,8 +261,10 @@ async function generateImageForItem(item, customAspectRatio) {
 
   let model = item.content_type === 'landing_page' ? 'fal-ai/flux-pro' : 'fal-ai/flux/schnell';
   
+  let isVideo = false;
   if (item.content_type === 'media' && item.is_animated) {
     model = 'fal-ai/kling-video/v1/standard/text-to-video';
+    isVideo = true;
   }
 
   // Mapping from our frontend 16:9 format to fal.run parameter
@@ -275,7 +277,8 @@ async function generateImageForItem(item, customAspectRatio) {
   const targetSize = sizeMap[customAspectRatio] || 'landscape_16_9';
 
   try {
-    const falRes = await fetch(`https://fal.run/${model}`, {
+    const urlPrefix = isVideo ? 'https://queue.fal.run/' : 'https://fal.run/';
+    const falRes = await fetch(`${urlPrefix}${model}`, {
       method: 'POST',
       headers: {
         Authorization: `Key ${process.env.FAL_API_KEY}`,
@@ -288,9 +291,18 @@ async function generateImageForItem(item, customAspectRatio) {
       }),
     });
 
-    if (!falRes.ok) return item; // fail silently, don't block content
+    if (!falRes.ok) return item;
 
     const falData = await falRes.json();
+    
+    // If it's a queue response, save the request_id and URLs and return
+    if (isVideo && falData.request_id) {
+      item.fal_request_id = falData.request_id;
+      item.fal_status_url = falData.status_url;
+      item.fal_response_url = falData.response_url;
+      return item;
+    }
+
     const media_url = falData?.video?.url || falData?.images?.[0]?.url || falData?.image?.url || null;
     if (media_url) {
       if (item.is_animated) item.video_url = media_url;
