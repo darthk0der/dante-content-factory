@@ -34,8 +34,9 @@ Added `GET /api/social-trending` to the ARRCC project (separate deployment). Uni
 **Phase 4 — Workflow Polish** ✅ COMPLETE
 UI and validation fixes. Character count constraints on prompts, stripping hashtags out of social copy, and separating Trend Hub from standard Auto Queue.
 
-**Phase 5 — API Publishing Integrations** ✅ COMPLETE
-Direct publishing architecture to replace Framer dependency. Added Resend API for emails, Meta Graph API for Facebook/Instagram, and LinkedIn API.
+**Phase 5 — API Publishing Integrations** ⚠️ PARTIAL
+Direct publishing architecture to replace Framer dependency. Added Resend API for emails, Meta Graph API for Facebook/Instagram, and LinkedIn API. 
+*Note: Meta is fully tested and live. LinkedIn and Resend backend logic is written but pending API keys and testing.*
 
 **Phase 6 — AI Memory System** ✅ COMPLETE
 Added `api/extract-feedback.js` to automatically extract rules from manual user edits. Built the `MemoryTab.jsx` UI to surface, review, and delete the retroactively learned rules.
