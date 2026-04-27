@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import { CONTENT_TYPE_LABELS, TWITTER_FORMATS, EMAIL_TYPES, AD_PLATFORMS, AD_PRODUCTS, BLOG_TYPES } from '../lib/skills.js';
 
+const PATIENT_STORIES = {
+  john_doe: "John (42) had unexplained chest pains for years. Standard cardiac panels showed nothing. Dante WGS identified a rare MYBPC3 variant associated with Hypertrophic Cardiomyopathy, changing his entire clinical management.",
+  jane_smith: "Jane (34) watched her mother and aunt battle breast cancer. Her standard BRCA1/2 panel was negative. Dante WGS sequenced all 20,000 genes and found a pathogenic variant in PALB2, giving her the answer she needed for preventative care.",
+  michael_t: "Michael (6) suffered from unexplained seizures and developmental delays. His diagnostic odyssey lasted 4 years. Dante WGS finally pinpointed a de novo SCN1A variant, ending the search and unlocking specific therapies.",
+  sarah_l: "Sarah (55) had early-onset cognitive decline symptoms. Standard tests were inconclusive. Dante WGS identified an APOE e4/e4 genotype, allowing her to enroll in targeted clinical trials immediately.",
+  david_w: "David (28) is a healthy athlete who wanted a proactive baseline. Dante WGS uncovered an elevated risk for Familial Hypercholesterolemia (FH) despite his perfect diet. He is now managing it before any plaque buildup occurs."
+};
+
 const CONTENT_TYPES = [
   { id: 'webpage', label: 'Webpage', title: 'Generate structural SEO or Campaign webpages' },
   { id: 'twitter', label: 'Twitter/X Post', title: 'Generate high-performance X threads or single posts' },
@@ -58,7 +66,7 @@ export default function GenerateTab({ onGenerated }) {
   const [emailType, setEmailType] = useState('newsletter');
   const [keyMessage, setKeyMessage] = useState('');
 
-  // Ad Copy
+  // Ads
   const [adPlatform, setAdPlatform] = useState('google');
   const [campaignObjective, setCampaignObjective] = useState('');
   const [product, setProduct] = useState('WGS');
@@ -89,7 +97,7 @@ export default function GenerateTab({ onGenerated }) {
 
     if (contentType === 'webpage') {
       if (!topic.trim()) { alert('Please enter a topic.'); return; }
-      generate({ ...basePayload, content_type: webpageType, topic: topic.trim(), blog_type: blogType, patient_story: blogType === 'patient_story' ? patientStory : undefined });
+      generate({ ...basePayload, content_type: webpageType, topic: topic.trim(), blog_type: blogType, patient_story: blogType === 'patient_story' ? PATIENT_STORIES[patientStory] : undefined });
     } else if (['twitter', 'facebook', 'reddit', 'linkedin', 'instagram'].includes(contentType)) {
       if (!topic.trim()) { alert('Please enter a topic.'); return; }
       generate({ ...basePayload, content_type: contentType, topic: topic.trim(), format: contentType === 'twitter' ? format : undefined });

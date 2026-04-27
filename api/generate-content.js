@@ -288,6 +288,8 @@ async function generateImageForItem(item, customAspectRatio) {
         prompt: item.image_prompt,
         image_size: targetSize,
         num_images: 1,
+        enable_safety_checker: false,
+        image_url: (item.content_type === 'ad_copy' || item.content_type === 'media') ? 'https://dante-content-factory.vercel.app/packaging.png' : undefined
       }),
     });
 
