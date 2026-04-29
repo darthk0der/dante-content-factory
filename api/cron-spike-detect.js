@@ -72,6 +72,7 @@ export default async function handler(req, res) {
         const brandVoice = await loadSkill(BRAND_VOICE_SKILL, true).catch(() => '');
         let generatedCount = 0;
         const spikesDetected = [];
+        const uiSignals = [];
 
         // --- 1. Ahrefs Volume Spikes ---
         if (process.env.AHREFS_API_KEY) {
@@ -97,6 +98,7 @@ export default async function handler(req, res) {
                             // Valid spike
                             await generateInsightBundle(kw, `Ahrefs spike: ${kw} ${currentVol} vol`, 'spike', brandVoice);
                             spikesDetected.push(kw);
+                            uiSignals.push({ source: 'Ahrefs SEO', topic: kw, metric: `${Math.round((currentVol/baseline)*10)/10}x Volume Spike`, sentiment: 'neutral' });
                             generatedCount++;
                         }
                     }
@@ -120,6 +122,7 @@ export default async function handler(req, res) {
                     if (!alreadyExists) {
                         await generateInsightBundle(topic, `News Trending: ${topic}`, 'spike', brandVoice);
                         spikesDetected.push(topic);
+                        uiSignals.push({ source: 'News Monitoring', topic: topic, metric: 'Breaking News Spike', sentiment: 'neutral' });
                         generatedCount++;
                     }
                 }
@@ -136,6 +139,7 @@ export default async function handler(req, res) {
                            if (!alreadyExists) {
                                await generateInsightBundle(rising.query, `Google Trends breakout: ${rising.query} (+${rising.extracted_value}%)`, 'spike', brandVoice);
                                spikesDetected.push(rising.query);
+                               uiSignals.push({ source: 'Google Trends', topic: rising.query, metric: `+${rising.extracted_value}% Breakout`, sentiment: 'neutral' });
                                generatedCount++;
                                break;
                            }
@@ -143,6 +147,18 @@ export default async function handler(req, res) {
                     }
                 }
             }
+        }
+
+        if (uiSignals.length > 0) {
+            // Keep the last 10 signals in Redis
+            let existingSignals = [];
+            try {
+                const stored = await redis.get('content:daily_signals');
+                if (stored) existingSignals = JSON.parse(stored);
+            } catch(e) {}
+            
+            const newSignals = [...uiSignals, ...existingSignals].slice(0, 10);
+            await redis.set('content:daily_signals', JSON.stringify(newSignals));
         }
 
         return res.status(200).json({ ok: true, generated: generatedCount, spikes: spikesDetected });

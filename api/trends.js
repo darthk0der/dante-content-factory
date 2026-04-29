@@ -37,14 +37,7 @@ export default async function handler(req, res) {
         }
     } catch(e) {}
 
-    // 3. Fallback / Mock Data if no external connections yet
-    if (signals.length === 0) {
-        signals = [
-            { source: 'Ahrefs SEO', topic: 'MTHFR gene mutation', metric: '2.4x Volume Spike', sentiment: 'neutral' },
-            { source: 'Google Trends', topic: 'whole genome sequencing cost', metric: '+250% Breakout', sentiment: 'neutral' },
-            { source: 'Social Listening', topic: 'EDS diagnosis journey', metric: '42 mentions', sentiment: 'frustration' }
-        ];
-    }
+    // 3. Removed misleading fallback mock data so the UI accurately reflects actual signals.
 
     return res.status(200).json({ signals: signals.slice(0, 5) });
   } catch (err) {
