@@ -88,6 +88,9 @@ export default async function handler(req, res) {
                     // Here we simply simulate parsing the current volume
                     const currentVol = data?.metrics?.[0]?.volume || (baseline * 0.5); 
                     
+                    const multiplier = Math.round((currentVol/baseline)*10)/10;
+                    uiSignals.push({ source: 'Ahrefs SEO', topic: kw, metric: `${multiplier}x Volume`, sentiment: 'neutral' });
+                    
                     if (currentVol >= (baseline * 2)) {
                         const slug = kw.replace(/[^a-z0-9]+/g, '-');
                         const alreadyExists = await redis.get(`spike:published:${slug}`);
@@ -98,7 +101,6 @@ export default async function handler(req, res) {
                             // Valid spike
                             await generateInsightBundle(kw, `Ahrefs spike: ${kw} ${currentVol} vol`, 'spike', brandVoice);
                             spikesDetected.push(kw);
-                            uiSignals.push({ source: 'Ahrefs SEO', topic: kw, metric: `${Math.round((currentVol/baseline)*10)/10}x Volume Spike`, sentiment: 'neutral' });
                             generatedCount++;
                         }
                     }
@@ -133,15 +135,14 @@ export default async function handler(req, res) {
                 const trendsData = await checkSerpApi('google_trends', 'genetic testing');
                 if (trendsData && trendsData.related_queries?.rising) {
                     for (const rising of trendsData.related_queries.rising) {
-                        if (rising.extracted_value > 200) { // 200% increase
+                        uiSignals.push({ source: 'Google Trends', topic: rising.query, metric: `+${rising.extracted_value}% Breakout`, sentiment: 'neutral' });
+                        if (rising.extracted_value > 200 && generatedCount < 2) { // 200% increase
                            const slug = rising.query.replace(/[^a-z0-9]+/g, '-');
                            const alreadyExists = await redis.get(`spike:published:${slug}`);
                            if (!alreadyExists) {
                                await generateInsightBundle(rising.query, `Google Trends breakout: ${rising.query} (+${rising.extracted_value}%)`, 'spike', brandVoice);
                                spikesDetected.push(rising.query);
-                               uiSignals.push({ source: 'Google Trends', topic: rising.query, metric: `+${rising.extracted_value}% Breakout`, sentiment: 'neutral' });
                                generatedCount++;
-                               break;
                            }
                         }
                     }

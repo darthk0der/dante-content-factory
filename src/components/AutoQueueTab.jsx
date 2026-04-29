@@ -83,7 +83,10 @@ export default function AutoQueueTab({ items, onUpdate, onPublish, onSchedule, o
 
       {title === 'Trend Hub' && rawSignals.length > 0 && (
         <div style={{ marginBottom: '24px', background: 'var(--color-card)', padding: '16px', borderRadius: '10px', border: '1px solid var(--color-border)' }}>
-          <h3 style={{ margin: '0 0 12px 0', fontSize: '14px', color: 'var(--color-ink)' }}>Top Raw Signals (Daily)</h3>
+          <h3 style={{ margin: '0 0 4px 0', fontSize: '14px', color: 'var(--color-ink)' }}>Top Raw Signals (Daily)</h3>
+          <p style={{ margin: '0 0 16px 0', fontSize: '12px', color: 'var(--muted)', lineHeight: '1.4' }}>
+            The system tracks these signals daily. An automatic 360° Content Bundle will only trigger if Ahrefs volume exceeds a <strong>2x (200%) spike</strong>, Google Trends queries break out past <strong>200%</strong>, or if Claude AI detects a major market-moving news event.
+          </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
             {rawSignals.map((sig, idx) => (
               <div key={idx} style={{ flex: '1 1 200px', padding: '12px', background: 'var(--color-bg)', borderRadius: '6px', fontSize: '13px' }}>
