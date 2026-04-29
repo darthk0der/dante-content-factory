@@ -39,30 +39,26 @@ export async function generateInsightBundle(topic, triggerSource, sourceCategory
   const promoSuffix = slug.substring(0, 4).toUpperCase();
   const promoCode = 'TREND' + promoSuffix;
 
+  const { SKILL_MAP, buildUserPrompt } = await import('./promptBuilder.js');
+  const { loadSkill } = await import('./skills.js');
+
+  async function getSystemPrompt(contentType) {
+    const skillFile = SKILL_MAP[contentType];
+    if (skillFile) {
+      const primary = await loadSkill(skillFile);
+      return `${primary}\n\n---\n\nBRAND VOICE REFERENCE:\n${brandVoice}`;
+    }
+    return `${brandVoice}\n\nReturn ONLY valid JSON. No markdown code fences. No explanation text before or after the JSON.`;
+  }
+
   // 1. Generate Blog Post
-  const blogSystem = `Generate a fast-reacting, campaign-style insight page about: ${topicFriendly}.
-Target audience: Consumers seeing this news/trend.
-Length: 400-800 words. Focus on how Dante Labs' Whole Genome Sequencing relates to this securely and medically.
-
-CRITICAL: Do NOT return the complex condition_insight schema. Return a simple JSON with a standard stringified 'body_html' property containing clean HTML tags.
-
-Return ONLY valid JSON:
-{
-  "title": "...",
-  "slug": "${slug}",
-  "meta_description": "...",
-  "body_html": "<article HTML without main H1 title tag>",
-  "hero_headline": "Short landing page H1 headline...",
-  "hero_subhead": "1-2 sentence landing page subhead...",
-  "image_prompt": "Editorial lifestyle photo...",
-  "flags": []
-}`;
-  let blogData = await callAnthropic(`${brandVoice}\n\n${blogSystem}\n\nReturn ONLY valid JSON. No markdown code fences.`, `News/Trend Trigger: ${triggerSource}. Create insight page for ${topicFriendly}`);
+  const blogSys = await getSystemPrompt('blog');
+  const blogUser = buildUserPrompt({ content_type: 'blog', topic: topicFriendly, blog_type: 'Educational' });
+  let blogData = await callAnthropic(blogSys, blogUser);
   
   if (typeof blogData === 'string') {
     blogData = { title: topicFriendly, slug, body_html: blogData };
   } else {
-    // Rescue raw condition_insight JSON if Claude hallucinates it into body_html
     let bHtml = blogData.body_html;
     if (typeof bHtml === 'string' && bHtml.trim().startsWith('```json')) bHtml = bHtml.replace(/```json/g, '').replace(/```/g, '').trim();
     if (typeof bHtml === 'string' && bHtml.trim().startsWith('{')) {
@@ -81,56 +77,35 @@ Return ONLY valid JSON:
   }
 
   // 2. Generate Meta Ads
-  const metaObjective = `generate awareness about WGS using social trend: ${topicFriendly}`;
-  const metaUser = `Generate Meta (Facebook/Instagram) ad copy for Dante Labs.
-Campaign objective: ${metaObjective}
-Target audience: Adults impacted by the trend: ${topicFriendly}
-Return ONLY a valid JSON object matching this schema:
-{
-  "variants": [
-    {
-      "variant_focus": "Benefit-led",
-      "primary_text": "Main ad body copy shown in feed (max 125 chars)",
-      "headline": "Bold headline under the image (max 40 chars)",
-      "description": "Supporting line under headline (max 30 chars)",
-      "cta_button": "Learn More"
-    },
-    ... (include Problem-aware and Social proof variants too)
-  ],
-  "image_prompt": "editorial lifestyle photo..."
-}
-Rules: No exclamation points. No diagnostic claims. No competitor mentions.`;
-  const metaAdData = await callAnthropic(`${brandVoice}\n\nReturn ONLY valid JSON.`, metaUser);
+  const metaSys = await getSystemPrompt('ad_copy');
+  const metaUser = buildUserPrompt({ content_type: 'ad_copy', ad_platform: 'meta', campaign_objective: `generate awareness about WGS using social trend: ${topicFriendly}` });
+  const metaAdData = await callAnthropic(metaSys, metaUser);
 
   // 3. Generate Google Ads
-  const googleUser = `Generate Google Search ad copy for Dante Labs for trend: ${topicFriendly}.
-Return ONLY a valid JSON object matching:
-{
-  "variants": [
-    {
-      "variant_focus": "Benefit-led",
-      "headline_1": "Max 30 chars", "headline_2": "Max 30 chars", "headline_3": "Max 30 chars",
-      "description_1": "Max 90 chars", "description_2": "Max 90 chars"
-    },
-    ... (include Problem-aware and Social proof variants too)
-  ]
-}
-Rules: strict char limits.`;
-  const googleAdData = await callAnthropic(`${brandVoice}\n\nReturn ONLY valid JSON.`, googleUser);
+  const googleSys = await getSystemPrompt('ad_copy');
+  const googleUser = buildUserPrompt({ content_type: 'ad_copy', ad_platform: 'google', campaign_objective: `generate awareness about WGS using social trend: ${topicFriendly}` });
+  const googleAdData = await callAnthropic(googleSys, googleUser);
 
-  // 4. Generate Organic Social
-  const socialUser = `Generate an organic social media bundle for Dante Labs discussing the trend: ${topicFriendly}.
-Return ONLY a valid JSON object matching:
-{
-  "twitter": "Educational concise tweet (max 280 chars)",
-  "linkedin": "Professional post aimed at adults concerned about hereditary risk.",
-  "reddit": "Title and body for r/genetics or r/health. Must be conversational, educational, not a hard sell.",
-  "relevant_subreddits": ["r/Example1", "r/Example2", "r/Example3"],
-  "facebook": "Engaging, conversational post for families.",
-  "instagram": "Caption for the generated image, including 3-5 relevant exact hashtags."
-}
-Rules: No exclamation points. No diagnostic claims. No competitor mentions. The relevant_subreddits array MUST contain 3 researched communities where the reddit post safely fits without spam.`;
-  const socialData = await callAnthropic(`${brandVoice}\n\nReturn ONLY valid JSON.`, socialUser);
+  // 4. Generate Organic Social individually for perfect consistency
+  const socialData = {};
+  for (const plat of ['twitter', 'linkedin', 'reddit', 'facebook', 'instagram']) {
+    const sys = await getSystemPrompt(plat);
+    const user = buildUserPrompt({ content_type: plat, topic: topicFriendly });
+    const res = await callAnthropic(sys, user);
+    socialData[plat] = typeof res === 'object' && res.text ? res.text : (res.raw_content || JSON.stringify(res));
+    if (plat === 'reddit' && res.relevant_subreddits) {
+        socialData.relevant_subreddits = res.relevant_subreddits;
+    } else if (plat === 'reddit') {
+        // dynamic reddit search
+        try {
+            const redditRes = await fetch(`https://www.reddit.com/subreddits/search.json?q=${encodeURIComponent(topicFriendly)}&limit=3`);
+            if (redditRes.ok) {
+                const rData = await redditRes.json();
+                socialData.relevant_subreddits = rData?.data?.children?.map(c => c.data.display_name_prefixed) || [];
+            }
+        } catch(e) {}
+    }
+  }
 
   let imageUrl = null;
   const targetPrompt = "A highly cinematic, photorealistic 8k raw photo, shot on Sony A7R IV, natural light. It should be a real lifestyle scene (e.g. a family, a patient). NEVER depict hands in isolation. NEVER depict laboratory equipment. " + (metaAdData.image_prompt || blogData.image_prompt);

@@ -283,7 +283,29 @@ Checks all `status: scheduled` items where `scheduled_at <= now`. Calls publish 
 }
 ```
 
+## Environment Variables & API Keys
+
+To enable all integrations, the following environment variables must be configured in Vercel:
+
+### Core / AI
+- `ANTHROPIC_API_KEY`: For Claude generation.
+- `FAL_API_KEY`: For Fal.ai image/video generation.
+
+### Database
+- `UPSTASH_REDIS_REST_URL` & `UPSTASH_REDIS_REST_TOKEN`: For queue/memory storage.
+
+### Social Publishing & APIs
+- `TWITTER_API_KEY`, `TWITTER_API_SECRET`, `TWITTER_ACCESS_TOKEN`, `TWITTER_ACCESS_TOKEN_SECRET`: For Twitter v2 publishing.
+- `FACEBOOK_PAGE_ID`, `FACEBOOK_PAGE_ACCESS_TOKEN`: For Meta (Facebook/Instagram) publishing.
+- `LINKEDIN_ACCESS_TOKEN`, `LINKEDIN_URN`: For LinkedIn publishing. (Pending)
+- `RESEND_API_KEY`, `RESEND_AUDIENCE_ID`: For Email broadcasting. (Pending)
+
+### Cross-System Auth
+- `ARRCC_API_SECRET`: Shared secret between ARRCC and Content Factory for secure webhook/API communication.
+
 ---
+
+## Technical assumptions / Constraints
 
 ## CMS field substitution — landing page template
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CONTENT_TYPE_LABELS } from '../lib/skills.js';
 import Editor from './Editor.jsx';
 
@@ -31,6 +31,16 @@ function StatusBadge({ item }) {
 
 export default function AutoQueueTab({ items, onUpdate, onPublish, onSchedule, onDelete, title = "Auto Queue", emptyIcon = "⚙️", emptyMessage = "Auto-generated content from SEO queue, spike detection, daily tweets, and social ads will appear here for review." }) {
   const [openId, setOpenId] = useState(null);
+  const [rawSignals, setRawSignals] = useState([]);
+
+  useEffect(() => {
+    if (title === 'Trend Hub') {
+      fetch('/api/trends')
+        .then(r => r.json())
+        .then(d => { if (d.signals) setRawSignals(d.signals); })
+        .catch(console.error);
+    }
+  }, [title]);
 
   const queue = items.filter((i) =>
     AUTO_SOURCES.includes(i.source) &&
@@ -70,6 +80,22 @@ export default function AutoQueueTab({ items, onUpdate, onPublish, onSchedule, o
         {title}{' '}
         <span style={{ fontSize: '14px', fontWeight: 400, color: 'var(--muted)' }}>({queue.length})</span>
       </div>
+
+      {title === 'Trend Hub' && rawSignals.length > 0 && (
+        <div style={{ marginBottom: '24px', background: 'var(--color-card)', padding: '16px', borderRadius: '10px', border: '1px solid var(--color-border)' }}>
+          <h3 style={{ margin: '0 0 12px 0', fontSize: '14px', color: 'var(--color-ink)' }}>Top Raw Signals (Daily)</h3>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+            {rawSignals.map((sig, idx) => (
+              <div key={idx} style={{ flex: '1 1 200px', padding: '12px', background: 'var(--color-bg)', borderRadius: '6px', fontSize: '13px' }}>
+                <div style={{ color: 'var(--muted)', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px' }}>{sig.source}</div>
+                <div style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--color-ink)' }}>{sig.topic}</div>
+                <div style={{ color: 'var(--accent)', fontWeight: 500 }}>{sig.metric}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {queue.map((item) => {
           const unresolvedCount = (item.flags || []).filter((f) => !f.resolved).length;

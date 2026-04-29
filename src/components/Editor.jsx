@@ -222,7 +222,24 @@ export default function Editor({ item, onUpdate, onPublish, onSchedule, onDelete
       interval = setInterval(async () => {
         try {
           const res = await fetch(`/api/poll-video?id=${item.id}`);
-          const data = await res.json();
+          if (!res.ok) {
+            console.error(`Polling HTTP Error: ${res.status}`);
+            // Don't kill the interval immediately on 504s (Vercel timeouts), but we can log it.
+            if (res.status !== 504 && res.status !== 502) {
+                setVideoPolling(false);
+                notify(`Video API Error: ${res.statusText}`, 'error');
+                clearInterval(interval);
+            }
+            return;
+          }
+          let data;
+          try {
+            data = await res.json();
+          } catch(e) {
+            console.error("Invalid JSON from poll-video", e);
+            return; // keep polling, might be a temporary HTML error page
+          }
+
           if (data.status === 'COMPLETED' && data.video_url) {
              setVideoPolling(false);
              onUpdate({ ...item, video_url: data.video_url, fal_request_id: null });
@@ -233,7 +250,7 @@ export default function Editor({ item, onUpdate, onPublish, onSchedule, onDelete
              clearInterval(interval);
           }
         } catch(e) {
-           console.error(e);
+           console.error('Video polling network error:', e);
         }
       }, 8000);
     } else {
