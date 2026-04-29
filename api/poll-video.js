@@ -39,6 +39,15 @@ export default async function handler(req, res) {
 
     const statusData = await statusRes.json();
 
+    if (statusData.status === 'FAILED' || statusData.status === 'ERROR') {
+      item.video_url = null;
+      delete item.fal_request_id;
+      delete item.fal_status_url;
+      delete item.fal_response_url;
+      await redis.set(`content:${item.id}`, JSON.stringify(item));
+      return res.status(500).json({ error: `Fal AI Generation Failed: ${statusData.error || statusData.detail || 'Unknown error'}` });
+    }
+
     if (statusData.status === 'COMPLETED') {
       // 2. Fetch Result
       const resultRes = await fetch(item.fal_response_url, {

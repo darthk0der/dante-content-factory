@@ -33,7 +33,7 @@ function InsightBundlePreview({ item }) {
         </div>
       )}
       <div style={{ height: '800px', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
-        <h3 style={{ padding: '24px 24px 12px', margin: 0, fontSize: '18px' }}>Insight Article</h3>
+        <h3 style={{ padding: '24px 24px 12px', margin: 0, fontSize: '18px' }}>Blog Article</h3>
         <IframePreview item={item} view="blog" /> 
       </div>
       <div style={{ height: '800px', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
@@ -372,7 +372,7 @@ function MetaAdVariant({ v, i, imageUrl }) {
                 position: 'absolute', bottom: 0, left: 0, right: 0, padding: '24px', background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
                 display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'stretch'
               }}>
-                  <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: 600, fontFamily: 'Outfit, sans-serif', textAlign: 'right', textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
+                  <h2 style={{ color: '#fff', fontSize: '20px', fontWeight: 700, fontFamily: 'system-ui, -apple-system, sans-serif', textAlign: 'left', textShadow: '0 2px 8px rgba(0,0,0,0.8)', letterSpacing: '-0.02em' }}>
                     {v.headline}
                   </h2>
                 </div>

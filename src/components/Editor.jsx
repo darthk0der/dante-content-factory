@@ -122,6 +122,15 @@ function EmailFields({ c, setField }) {
   );
 }
 
+function SocialSingleFields({ item, c, setField }) {
+  const plat = item.content_type;
+  return (
+    <FieldGroup title={`${plat.charAt(0).toUpperCase() + plat.slice(1)} Post`}>
+      <Field label="Post content" value={c.text || ''} onChange={(v) => setField('content.text', v)} rows={6} />
+    </FieldGroup>
+  );
+}
+
 function SocialOrganicFields({ c, setField }) {
   const soc = c.social_organic || {};
 
@@ -224,10 +233,14 @@ export default function Editor({ item, onUpdate, onPublish, onSchedule, onDelete
           const res = await fetch(`/api/poll-video?id=${item.id}`);
           if (!res.ok) {
             console.error(`Polling HTTP Error: ${res.status}`);
-            // Don't kill the interval immediately on 504s (Vercel timeouts), but we can log it.
             if (res.status !== 504 && res.status !== 502) {
+                let errStr = res.statusText || 'Unknown error';
+                try {
+                  const errJson = await res.clone().json();
+                  if (errJson.error) errStr = errJson.error;
+                } catch(e) {}
                 setVideoPolling(false);
-                notify(`Video API Error: ${res.statusText}`, 'error');
+                notify(`Video API Error: ${errStr}`, 'error');
                 clearInterval(interval);
             }
             return;
@@ -556,6 +569,7 @@ export default function Editor({ item, onUpdate, onPublish, onSchedule, onDelete
           {item.content_type === 'email'        && <EmailFields c={c} setField={setField} />}
           {item.content_type === 'ad_copy'      && <AdCopyFields c={c} setField={setField} />}
           {item.content_type === 'insight_bundle' && <SocialOrganicFields c={c} setField={setField} />}
+          {['facebook', 'linkedin', 'instagram', 'reddit'].includes(item.content_type) && <SocialSingleFields item={item} c={c} setField={setField} />}
 
           {/* Flags in edit mode too */}
           <div className="card">

@@ -61,8 +61,10 @@ export default function App() {
 
   function handleGenerated(item) {
     upsertItem(item);
-    if (item.content_type === 'insight_bundle') {
+    if (item.content_type === 'insight_bundle' && item.source !== 'manual') {
       setTab('insights');
+    } else if (item.content_type === 'insight_bundle') {
+      setTab('review');
     } else {
       setTab(AUTO_SOURCES.includes(item.source) ? 'auto' : 'review');
     }

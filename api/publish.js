@@ -427,6 +427,16 @@ export async function publishItem(item, redisClient) {
     const existingLp = await githubGetFile(lpPath);
     await githubPutFile(lpPath, lpHtml, `content: add bundle campaign — ${item.topic}`, existingLp?.sha);
 
+    // 3. Publish Organic Social
+    if (item.content.social_organic) {
+      const so = item.content.social_organic;
+      const getStr = (val) => typeof val === 'object' ? (val.text || val.tweet_text || val.body || JSON.stringify(val)) : val;
+      try { if (so.twitter) await twitterPost(getStr(so.twitter), item.image_url || null); } catch (e) { console.error('Twitter bundle publish error', e); }
+      try { if (so.linkedin) await linkedinPost(getStr(so.linkedin), item.image_url || null); } catch (e) { console.error('LinkedIn bundle publish error', e); }
+      try { if (so.facebook) await facebookPost(getStr(so.facebook), item.image_url || null); } catch (e) { console.error('Facebook bundle publish error', e); }
+      try { if (so.instagram) await instagramPost(getStr(so.instagram), item.image_url || null); } catch (e) { console.error('Instagram bundle publish error', e); }
+    }
+
     result = { live_url: `https://dantelabs.com/${item.slug}-campaign/` };
   }
 

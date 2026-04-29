@@ -199,14 +199,36 @@ export default async function handler(req, res) {
   try {
     parsed = JSON.parse(raw);
 
-    if (content_type === 'twitter' && parsed.tweet_text && !parsed.text) {
-      parsed.text = parsed.tweet_text;
+    if (content_type === 'twitter') {
+      if (parsed.tweet_text && !parsed.text) parsed.text = parsed.tweet_text;
+      if (parsed.tweet && !parsed.text) parsed.text = parsed.tweet;
+      if (!parsed.text && typeof parsed === 'object') {
+        const textKey = Object.keys(parsed).find(k => k.includes('text') || k.includes('tweet') || k === 'content' || k === 'body');
+        if (textKey) parsed.text = parsed[textKey];
+      }
     }
     if (content_type === 'blog') {
       parsed = normaliseBlog(parsed);
     }
     if (content_type === 'webpage' && body.webpage_type === 'blog') {
       parsed.body_html = cleanEmailBody(parsed.body_html);
+    }
+
+    if (content_type === 'ad_copy' && parsed.variants && Array.isArray(parsed.variants)) {
+      parsed.variants = parsed.variants.map(v => {
+        if (parsed.platform === 'meta' || ad_platform === 'meta') {
+           if (v.primary_text) v.primary_text = v.primary_text.substring(0, 125);
+           if (v.headline) v.headline = v.headline.substring(0, 40);
+           if (v.description) v.description = v.description.substring(0, 30);
+        } else if (parsed.platform === 'google' || ad_platform === 'google') {
+           if (v.headline_1) v.headline_1 = v.headline_1.substring(0, 30);
+           if (v.headline_2) v.headline_2 = v.headline_2.substring(0, 30);
+           if (v.headline_3) v.headline_3 = v.headline_3.substring(0, 30);
+           if (v.description_1) v.description_1 = v.description_1.substring(0, 90);
+           if (v.description_2) v.description_2 = v.description_2.substring(0, 90);
+        }
+        return v;
+      });
     }
 
     if (content_type === 'email' && parsed.body_html) {

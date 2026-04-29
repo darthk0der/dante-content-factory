@@ -19,8 +19,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         image_url,
         prompt: prompt || 'Cinematic slow pan, beautiful lighting, subtle natural movement.',
-        duration: "5",
-        aspect_ratio: "16:9"
+        duration: "5"
       }),
     });
 

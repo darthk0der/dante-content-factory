@@ -171,7 +171,8 @@ Return ONLY a valid JSON object:
 {
   "text": "The highly engaging copy tailored exactly to ${content_type}'s native audience behavior and algorithms",
   "image_prompt": "A prompt for a lifestyle image if needed, else empty"
-}`;
+}
+${content_type === 'linkedin' ? '\nCRITICAL: NEVER use hashtags in LinkedIn posts under any circumstances.' : ''}`;
   }
 
   if (content_type === 'media') {
