@@ -35,8 +35,9 @@ async function evaluateNewsWithClaude(newsItems, brandVoice) {
     const headlines = newsItems.slice(0, 10).map(n => `- ${n.title}: ${n.snippet}`).join('\n');
     const systemPrompt = `You are evaluating news headlines for Dante Labs. Determine if any story represents a significant, market-moving event that will generate search demand for genetic testing. 
 Exclude competitor product launches unless it's a massive failure or data breach.
-If there's a strong opportunity, return a JSON object: {"is_spike": true, "topic": "The exact topic/event", "reason": "Why it matters"}
-Otherwise return: {"is_spike": false}`;
+Assess the relevance of the news on a scale of 0 to 100.
+If there's a strong opportunity, return a JSON object: {"is_spike": true, "topic": "The exact topic/event", "relevance_score": 85}
+Otherwise return: {"is_spike": false, "relevance_score": 0}`;
     
     try {
         const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -57,7 +58,7 @@ Otherwise return: {"is_spike": false}`;
         const raw = data.content?.[0]?.text || '';
         const match = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
         const parsed = JSON.parse(match ? match[1] : raw);
-        return parsed.is_spike ? parsed.topic : null;
+        return parsed.is_spike || parsed.relevance_score > 0 ? { topic: parsed.topic, score: parsed.relevance_score || 0 } : null;
     } catch {
         return null;
     }
@@ -89,8 +90,10 @@ export default async function handler(req, res) {
                     // Here we simply simulate parsing the current volume
                     const currentVol = data?.metrics?.[0]?.volume || (baseline * 0.5); 
                     
-                    const multiplier = Math.round((currentVol/baseline)*10)/10;
-                    uiSignals.push({ source: 'Ahrefs SEO', topic: kw, metric: `${multiplier}x Volume`, sentiment: 'neutral' });
+                    const multiplier = Math.round((currentVol/baseline)*100)/100; // e.g. 1.05
+                    if (multiplier >= 1.01) {
+                        uiSignals.push({ source: 'Ahrefs SEO', topic: kw, metric: `${multiplier}x Volume`, sentiment: 'neutral' });
+                    }
                     
                     if (currentVol >= (baseline * 2)) {
                         const slug = kw.replace(/[^a-z0-9]+/g, '-');
@@ -122,13 +125,13 @@ export default async function handler(req, res) {
             if (!newsData) debugLogs.push("checkSerpApi returned null for news");
             if (newsData && newsData.news_results) {
                 const topic = await evaluateNewsWithClaude(newsData.news_results, brandVoice);
-                if (topic) {
-                    const slug = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                if (topic && topic.score >= 1) {
+                    const slug = topic.topic.toLowerCase().replace(/[^a-z0-9]+/g, '-');
                     const alreadyExists = await redis.get(`spike:published:${slug}`);
                     if (!alreadyExists) {
-                        await generateInsightBundle(topic, `News Trending: ${topic}`, 'spike', brandVoice);
-                        spikesDetected.push(topic);
-                        uiSignals.push({ source: 'News Monitoring', topic: topic, metric: 'Breaking News Spike', sentiment: 'neutral' });
+                        await generateInsightBundle(topic.topic, `News Trending: ${topic.topic}`, 'spike', brandVoice);
+                        spikesDetected.push(topic.topic);
+                        uiSignals.push({ source: 'Claude AI', topic: topic.topic, metric: `${topic.score}% Relevance`, sentiment: 'neutral' });
                         generatedCount++;
                     }
                 }
@@ -139,8 +142,10 @@ export default async function handler(req, res) {
                 const trendsData = await checkSerpApi('google_trends', 'genetic testing');
                 if (trendsData && trendsData.related_queries?.rising) {
                     for (const rising of trendsData.related_queries.rising) {
-                        uiSignals.push({ source: 'Google Trends', topic: rising.query, metric: `+${rising.extracted_value}% Breakout`, sentiment: 'neutral' });
-                        if (rising.extracted_value > 200 && generatedCount < 2) { // 200% increase
+                        if (rising.extracted_value >= 1) {
+                            uiSignals.push({ source: 'Google Trends', topic: rising.query, metric: `+${rising.extracted_value}% Breakout`, sentiment: 'neutral' });
+                        }
+                        if (rising.extracted_value >= 200 && generatedCount < 2) { // 200% increase
                            const slug = rising.query.replace(/[^a-z0-9]+/g, '-');
                            const alreadyExists = await redis.get(`spike:published:${slug}`);
                            if (!alreadyExists) {
@@ -167,7 +172,7 @@ export default async function handler(req, res) {
                 debugLogs.push(`Redis error: ${e.message}`);
             }
             
-            const newSignals = [...uiSignals, ...existingSignals].slice(0, 10);
+            const newSignals = [...uiSignals, ...existingSignals].slice(0, 30);
             await redis.set('content:daily_signals', JSON.stringify(newSignals));
         }
 

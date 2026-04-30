@@ -81,20 +81,49 @@ export default function AutoQueueTab({ items, onUpdate, onPublish, onSchedule, o
         <span style={{ fontSize: '14px', fontWeight: 400, color: 'var(--muted)' }}>({queue.length})</span>
       </div>
 
-      {title === 'Trend Hub' && rawSignals.length > 0 && (
+      {title === 'Trend Hub' && (
         <div style={{ marginBottom: '24px', background: 'var(--color-card)', padding: '16px', borderRadius: '10px', border: '1px solid var(--color-border)' }}>
           <h3 style={{ margin: '0 0 4px 0', fontSize: '14px', color: 'var(--color-ink)' }}>Top Raw Signals (Daily)</h3>
           <p style={{ margin: '0 0 16px 0', fontSize: '12px', color: 'var(--muted)', lineHeight: '1.4' }}>
             The system tracks these signals daily. An automatic 360° Content Bundle will only trigger if Ahrefs volume exceeds a <strong>2x (200%) spike</strong>, Google Trends queries break out past <strong>200%</strong>, or if Claude AI detects a major market-moving news event.
           </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-            {rawSignals.map((sig, idx) => (
-              <div key={idx} style={{ flex: '1 1 200px', padding: '12px', background: 'var(--color-bg)', borderRadius: '6px', fontSize: '13px' }}>
-                <div style={{ color: 'var(--muted)', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px' }}>{sig.source}</div>
-                <div style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--color-ink)' }}>{sig.topic}</div>
-                <div style={{ color: 'var(--accent)', fontWeight: 500 }}>{sig.metric}</div>
-              </div>
-            ))}
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+            {['Ahrefs SEO', 'Google Trends', 'Claude AI'].map(source => {
+                // Filter signals for this source and ensure no duplicates
+                const sourceSignals = [];
+                const seen = new Set();
+                for (const sig of rawSignals) {
+                    if (sig.source === source && !seen.has(sig.topic)) {
+                        sourceSignals.push(sig);
+                        seen.add(sig.topic);
+                    }
+                }
+                
+                // Get top 3
+                const top3 = sourceSignals.slice(0, 3);
+                
+                return (
+                    <div key={source} style={{ background: 'var(--color-bg)', padding: '12px', borderRadius: '8px', border: '1px solid var(--color-border)' }}>
+                        <div style={{ color: 'var(--muted)', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid var(--color-border)' }}>
+                            {source}
+                        </div>
+                        
+                        {top3.length === 0 ? (
+                            <div style={{ fontSize: '13px', color: 'var(--muted)', fontStyle: 'italic', padding: '8px 0' }}>No Signal</div>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                {top3.map((sig, idx) => (
+                                    <div key={idx} style={{ fontSize: '13px' }}>
+                                        <div style={{ fontWeight: 600, marginBottom: '2px', color: 'var(--color-ink)' }}>{sig.topic}</div>
+                                        <div style={{ color: 'var(--accent)', fontWeight: 500, fontSize: '12px' }}>{sig.metric}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
           </div>
         </div>
       )}
