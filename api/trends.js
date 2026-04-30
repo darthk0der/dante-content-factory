@@ -35,7 +35,9 @@ export default async function handler(req, res) {
             // Upstash automatically parses JSON
             const parsed = typeof storedSpikes === 'string' ? JSON.parse(storedSpikes) : storedSpikes;
             if (Array.isArray(parsed)) {
-                signals.push(...parsed);
+                // Filter out old "1x Volume" entries from previous sessions
+                const validSignals = parsed.filter(s => !s.metric.includes('1x Volume') && s.topic !== 'General News');
+                signals.push(...validSignals);
             }
         }
     } catch(e) {

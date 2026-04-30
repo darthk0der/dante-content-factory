@@ -37,7 +37,7 @@ async function evaluateNewsWithClaude(newsItems, brandVoice) {
 Exclude competitor product launches unless it's a massive failure or data breach.
 Assess the relevance of the news on a scale of 0 to 100.
 If there's a strong opportunity, return a JSON object: {"is_spike": true, "topic": "The exact topic/event", "relevance_score": 85}
-Otherwise return: {"is_spike": false, "relevance_score": 0}`;
+Otherwise return: {"is_spike": false, "topic": "The main topic evaluated", "relevance_score": 0}`;
     
     try {
         const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -90,9 +90,10 @@ export default async function handler(req, res) {
                     // Here we simply simulate parsing the current volume
                     const currentVol = data?.metrics?.[0]?.volume || (baseline * 0.5); 
                     
-                    const multiplier = Math.round((currentVol/baseline)*100)/100; // e.g. 1.05
-                    if (multiplier >= 1.01) {
-                        uiSignals.push({ source: 'Ahrefs SEO', topic: kw, metric: `${multiplier}x Volume`, sentiment: 'neutral' });
+                    const multiplier = currentVol / baseline;
+                    const percentIncrease = Math.round((multiplier - 1) * 100);
+                    if (percentIncrease >= 1) {
+                        uiSignals.push({ source: 'Ahrefs SEO', topic: kw, metric: `+${percentIncrease}% Volume`, sentiment: 'neutral' });
                     }
                     
                     if (currentVol >= (baseline * 2)) {
