@@ -103,9 +103,14 @@ export default async function handler(req, res) {
                         
                         if (!alreadyExists && !conditionDirs.includes(slug) && !blogDirs.includes(slug)) {
                             // Valid spike
-                            await generateInsightBundle(kw, `Ahrefs spike: ${kw} ${currentVol} vol`, 'spike', brandVoice);
-                            spikesDetected.push(kw);
-                            generatedCount++;
+                            try {
+                                await generateInsightBundle(kw, `Ahrefs spike: ${kw} ${currentVol} vol`, 'spike', brandVoice);
+                                spikesDetected.push(kw);
+                                generatedCount++;
+                            } catch (e) {
+                                debugLogs.push(`Bundle generation failed for Ahrefs: ${e.message}`);
+                                console.warn(`Bundle generation failed for ${kw}:`, e.message);
+                            }
                         }
                     }
                     
@@ -130,10 +135,15 @@ export default async function handler(req, res) {
                     const slug = topicStr.toLowerCase().replace(/[^a-z0-9]+/g, '-');
                     const alreadyExists = await redis.get(`spike:published:${slug}`);
                     if (!alreadyExists) {
-                        await generateInsightBundle(topicStr, `News Trending: ${topicStr}`, 'spike', brandVoice);
-                        spikesDetected.push(topicStr);
+                        try {
+                            await generateInsightBundle(topicStr, `News Trending: ${topicStr}`, 'spike', brandVoice);
+                            spikesDetected.push(topicStr);
+                            generatedCount++;
+                        } catch (e) {
+                            debugLogs.push(`Bundle generation failed for Claude AI: ${e.message}`);
+                            console.warn(`Bundle generation failed for ${topicStr}:`, e.message);
+                        }
                         uiSignals.push({ source: 'Claude AI', topic: topicStr, metric: `${topic.score}% Relevance`, sentiment: 'neutral' });
-                        generatedCount++;
                     }
                 }
             }
@@ -150,9 +160,14 @@ export default async function handler(req, res) {
                            const slug = rising.query.replace(/[^a-z0-9]+/g, '-');
                            const alreadyExists = await redis.get(`spike:published:${slug}`);
                            if (!alreadyExists) {
-                               await generateInsightBundle(rising.query, `Google Trends breakout: ${rising.query} (+${rising.extracted_value}%)`, 'spike', brandVoice);
-                               spikesDetected.push(rising.query);
-                               generatedCount++;
+                               try {
+                                   await generateInsightBundle(rising.query, `Google Trends breakout: ${rising.query} (+${rising.extracted_value}%)`, 'spike', brandVoice);
+                                   spikesDetected.push(rising.query);
+                                   generatedCount++;
+                               } catch (e) {
+                                   debugLogs.push(`Bundle generation failed for Google Trends: ${e.message}`);
+                                   console.warn(`Bundle generation failed for ${rising.query}:`, e.message);
+                               }
                            }
                         }
                     }
