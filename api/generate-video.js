@@ -2,7 +2,14 @@ import { redis } from './_lib/redis.js';
 
 export const maxDuration = 300; // allow Vercel to wait for Kling Video Generation (up to 5m)
 
+import { verifyAuth } from './_lib/auth.js';
+
 export default async function handler(req, res) {
+    try {
+        await verifyAuth(req);
+    } catch (e) {
+        return res.status(403).json({ error: 'Forbidden', message: e.message });
+    }
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { id, image_url, prompt } = req.body;

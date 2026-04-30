@@ -15,7 +15,14 @@ async function getAllItems() {
   );
 }
 
+import { verifyAuth } from './_lib/auth.js';
+
 export default async function handler(req, res) {
+    try {
+        await verifyAuth(req);
+    } catch (e) {
+        return res.status(403).json({ error: 'Forbidden', message: e.message });
+    }
   if (req.method === 'GET') {
     try {
       const items = await getAllItems();

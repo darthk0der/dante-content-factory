@@ -1,6 +1,13 @@
 import { redis } from './_lib/redis.js';
 
+import { verifyAuth } from './_lib/auth.js';
+
 export default async function handler(req, res) {
+    try {
+        await verifyAuth(req);
+    } catch (e) {
+        return res.status(403).json({ error: 'Forbidden', message: e.message });
+    }
   if (req.method === 'GET') {
     try {
       const rules = await redis.lrange('content:global_rules', 0, -1);

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import LoginScreen from './components/LoginScreen.jsx';
 import GenerateTab from './components/GenerateTab.jsx';
 import ReviewTab from './components/ReviewTab.jsx';
 import AutoQueueTab from './components/AutoQueueTab.jsx';
@@ -31,17 +32,53 @@ function TabCount({ items, tabId }) {
 }
 
 export default function App() {
+  const [token, setToken] = useState(() => localStorage.getItem('dante_auth_token'));
   const [tab, setTab] = useState('generate');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Monkey-patch fetch to globally attach the auth token to all /api/ calls
   useEffect(() => {
+    if (!token) return;
+    
+    const originalFetch = window.fetch;
+    window.fetch = async (url, options = {}) => {
+      if (typeof url === 'string' && url.startsWith('/api/')) {
+        options.headers = {
+          ...options.headers,
+          Authorization: `Bearer ${token}`
+        };
+      }
+      const res = await originalFetch(url, options);
+      // Auto-logout if token is invalid or user is not allowed
+      if (res.status === 401 || res.status === 403) {
+        setToken(null);
+        localStorage.removeItem('dante_auth_token');
+      }
+      return res;
+    };
+
+    return () => { window.fetch = originalFetch; };
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) return;
+    setLoading(true);
     fetch('/api/queue')
       .then((r) => r.json())
       .then((data) => setItems(data.items || []))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
+  }, [token]);
+
+  if (!token) {
+    return (
+      <LoginScreen onLoginSuccess={(credential) => {
+        setToken(credential);
+        localStorage.setItem('dante_auth_token', credential);
+      }} />
+    );
+  }
 
   function upsertItem(updated) {
     setItems((prev) => {
