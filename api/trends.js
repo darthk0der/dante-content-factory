@@ -32,10 +32,15 @@ export default async function handler(req, res) {
     try {
         const storedSpikes = await redis.get('content:daily_signals');
         if (storedSpikes) {
-            const parsed = JSON.parse(storedSpikes);
-            signals.push(...parsed);
+            // Upstash automatically parses JSON
+            const parsed = typeof storedSpikes === 'string' ? JSON.parse(storedSpikes) : storedSpikes;
+            if (Array.isArray(parsed)) {
+                signals.push(...parsed);
+            }
         }
-    } catch(e) {}
+    } catch(e) {
+        console.error("Redis get failed:", e);
+    }
 
     // 3. Removed misleading fallback mock data so the UI accurately reflects actual signals.
 

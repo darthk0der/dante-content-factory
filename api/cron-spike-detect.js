@@ -159,8 +159,13 @@ export default async function handler(req, res) {
             let existingSignals = [];
             try {
                 const stored = await redis.get('content:daily_signals');
-                if (stored) existingSignals = JSON.parse(stored);
-            } catch(e) {}
+                if (stored) {
+                    existingSignals = typeof stored === 'string' ? JSON.parse(stored) : stored;
+                    if (!Array.isArray(existingSignals)) existingSignals = [];
+                }
+            } catch(e) {
+                debugLogs.push(`Redis error: ${e.message}`);
+            }
             
             const newSignals = [...uiSignals, ...existingSignals].slice(0, 10);
             await redis.set('content:daily_signals', JSON.stringify(newSignals));
