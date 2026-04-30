@@ -73,6 +73,7 @@ export default async function handler(req, res) {
         let generatedCount = 0;
         const spikesDetected = [];
         const uiSignals = [];
+        const debugLogs = [];
 
         // --- 1. Ahrefs Volume Spikes ---
         if (process.env.AHREFS_API_KEY) {
@@ -108,6 +109,7 @@ export default async function handler(req, res) {
                     // Update baseline dynamically for next time
                     if (currentVol > 10) await redis.set(`spike:baseline:${kw}`, currentVol.toString());
                 } catch (e) {
+                    debugLogs.push(`Ahrefs error for ${kw}: ${e.message}`);
                     console.warn(`Ahrefs volume check failed for ${kw}:`, e.message);
                 }
             }
@@ -115,7 +117,9 @@ export default async function handler(req, res) {
 
         // --- 2. News Monitoring (via SERP API -> Claude) ---
         if (process.env.SERPAPI_API_KEY && generatedCount < 2) {
+            debugLogs.push("SERPAPI_API_KEY is present, running news check.");
             const newsData = await checkSerpApi('google', 'genetic testing news OR genomics OR gene discovery', { tbm: 'nws' });
+            if (!newsData) debugLogs.push("checkSerpApi returned null for news");
             if (newsData && newsData.news_results) {
                 const topic = await evaluateNewsWithClaude(newsData.news_results, brandVoice);
                 if (topic) {
@@ -162,7 +166,7 @@ export default async function handler(req, res) {
             await redis.set('content:daily_signals', JSON.stringify(newSignals));
         }
 
-        return res.status(200).json({ ok: true, generated: generatedCount, spikes: spikesDetected });
+        return res.status(200).json({ ok: true, generated: generatedCount, spikes: spikesDetected, uiSignals: uiSignals.length, debugLogs });
 
     } catch (e) {
         console.error("Spike detect error:", e);
