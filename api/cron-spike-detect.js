@@ -126,12 +126,13 @@ export default async function handler(req, res) {
             if (newsData && newsData.news_results) {
                 const topic = await evaluateNewsWithClaude(newsData.news_results, brandVoice);
                 if (topic && topic.score >= 1) {
-                    const slug = topic.topic.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                    const topicStr = topic.topic || 'General News';
+                    const slug = topicStr.toLowerCase().replace(/[^a-z0-9]+/g, '-');
                     const alreadyExists = await redis.get(`spike:published:${slug}`);
                     if (!alreadyExists) {
-                        await generateInsightBundle(topic.topic, `News Trending: ${topic.topic}`, 'spike', brandVoice);
-                        spikesDetected.push(topic.topic);
-                        uiSignals.push({ source: 'Claude AI', topic: topic.topic, metric: `${topic.score}% Relevance`, sentiment: 'neutral' });
+                        await generateInsightBundle(topicStr, `News Trending: ${topicStr}`, 'spike', brandVoice);
+                        spikesDetected.push(topicStr);
+                        uiSignals.push({ source: 'Claude AI', topic: topicStr, metric: `${topic.score}% Relevance`, sentiment: 'neutral' });
                         generatedCount++;
                     }
                 }
