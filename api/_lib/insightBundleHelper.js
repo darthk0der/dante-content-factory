@@ -27,8 +27,13 @@ async function callAnthropic(systemPrompt, userPrompt) {
   if (!res.ok) throw new Error(data.error?.message || 'Anthropic API error');
 
   const fullText = data.content?.[0]?.text || '';
-  const match = fullText.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  const raw = (match ? match[1] : fullText).trim();
+  let raw = fullText.trim();
+  const match = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (match) {
+    raw = match[1].trim();
+  } else {
+    raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
+  }
   try {
     return JSON.parse(raw);
   } catch(e) {

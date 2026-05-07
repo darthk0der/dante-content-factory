@@ -199,8 +199,14 @@ export default async function handler(req, res) {
   const fullText = anthropicData.content?.[0]?.text || '';
 
   // Extract JSON — try code fence first, then raw
-  const codeBlockMatch = fullText.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  const raw = (codeBlockMatch ? codeBlockMatch[1] : fullText).trim();
+  let raw = fullText.trim();
+  const codeBlockMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (codeBlockMatch) {
+    raw = codeBlockMatch[1].trim();
+  } else {
+    // Fallback: strip leading ```json even if the closing backticks are missing
+    raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
+  }
 
   let parsed;
   try {
